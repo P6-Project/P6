@@ -1,15 +1,20 @@
-import pandas 
+import pandas
 import os
 import pickle
 import numpy 
 import argparse
 
+def listdir_nohidden(path):
+    for f in os.listdir(path):
+        if not f.startswith('.'):
+            yield f
+
 def trainingData(dataDir: str):
     paths = dict()
-    for car in os.listdir(dataDir):
+    for car in listdir_nohidden(dataDir):
         paths[car] = []
         carDir = os.path.join(dataDir, car)
-        for exp in os.listdir(carDir):
+        for exp in listdir_nohidden(carDir):
             expDir = os.path.join(carDir, exp)
             if exp == "unified.csv":
                 paths[car].append(expDir)
