@@ -1,5 +1,7 @@
+__pycache__/
 data/
-.idea/
+pythonEnv/
+.idea/  
 .DS_Store
 .venv/
 *.pkl
