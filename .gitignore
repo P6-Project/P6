@@ -7,3 +7,4 @@ pythonEnv/
 *.pkl
 *.pickle
 *.db
+*.ipynb
