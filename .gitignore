@@ -6,3 +6,4 @@ pythonEnv/
 .venv/
 *.pkl
 *.pickle
+*.db
