@@ -11,14 +11,14 @@ with open("./loxam.pkl", "rb") as f:
 	
 
 dataframe["ID"] = dataframe["ID"].apply(lambda x: int(x, 16))
-Target = dataframe["Name"]
+target = dataframe["Name"]
 dataframe = dataframe.drop("Name", axis=1).drop("Source", axis=1).drop("Action", axis=1)
 
 
 
 # Splitting data
 print("splitting data")
-data_train, data_test, target_train, target_test = train_test_split(dataframe, Target, test_size=0.2)
+data_train, data_test, target_train, target_test = train_test_split(dataframe, target, test_size=0.2)
 
 #  Setup and training
 print("setup and training")
