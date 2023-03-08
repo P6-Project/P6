@@ -6,3 +6,5 @@ pythonEnv/
 .venv/
 *.pkl
 *.pickle
+*.db
+*.ipynb
