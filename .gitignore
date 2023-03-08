@@ -3,8 +3,18 @@ data/
 pythonEnv/
 .idea/  
 .DS_Store
-.venv/
 *.pkl
 *.pickle
+
+# Environments
+.env
+.venv
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 *.db
 *.ipynb
