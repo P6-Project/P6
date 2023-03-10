@@ -46,7 +46,6 @@ def loadCanBusTester2CSV(path: str):
     idCol = []
     hexRe = re.compile(r"\b[0-9A-Fa-f]+\b")
     
-    print(path)
     with open(path, "r", encoding="utf8") as f:
         lines = f.readlines()
     

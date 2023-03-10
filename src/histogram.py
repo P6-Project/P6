@@ -1,4 +1,5 @@
 import os
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -34,6 +35,14 @@ def create_dict_can_pkl(file):
 
     return can_id_dict
 
-create_all_graphs("../../data/", "../../graphs/")
-diagram = create_bar_diagram_can_ids(create_dict_can_pkl("../../data/JCB 19C1E mini loader off.pkl"), "JCB 19C1E mini loader ignition test")
-diagram.show()
+if __name__ == "__main__":
+    argparser = argparse.ArgumentParser()
+
+    argparser.add_argument("input_folder")
+    argparser.add_argument("output_folder")
+    args = argparser.parse_args()
+    
+    if args.input_folder[-1] != '/': args.input_folder += '/'
+    if args.output_folder[-1] != '/': args.output_folder += '/'
+
+    create_all_graphs(args.input_folder, args.output_folder)

@@ -14,9 +14,7 @@ if __name__ == "__main__":
     
     for file in os.listdir(args.folder):
         loxamData = load_loxam_file(args.folder, file)
-        file = file[:-4]
-        path = os.path.join(args.out, file) + ".pkl"
+        path = os.path.join(args.out, file[:-4]) + ".pkl" # .csv to .pkl
+        print(path)
         with open(path, 'wb') as f:
             pickle.dump(loxamData, f, protocol=pickle.HIGHEST_PROTOCOL)
-        print(loxamData)
-
