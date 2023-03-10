@@ -1,0 +1,6 @@
+time,id,can,datatype,variable,value
+2018-07-26 15:15:58.643918,0DE,can0,halfword,HA_0,7843
+2018-07-26 15:15:58.643918,0DE,can0,halfword,HA_1,6096
+2018-07-26 15:15:58.653772,0DE,can0,halfword,HA_0,7843
+2018-07-26 15:15:58.653772,0DE,can0,halfword,HA_1,6096
+2018-07-26 15:15:58.664227,0DE,can0,halfword,HA_0,7843
