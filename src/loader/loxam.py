@@ -21,11 +21,32 @@ def loadLoxam(directory: str):
         actionCol = [*actionCol, *[action for _ in range(len(newTimes))]]
         sourceCol = [*sourceCol, *["Loxam" for _ in range(len(newTimes))]]
     return DataFrame({"Time": timeCol, "ID": idCol, "Name": nameCol, "Action": actionCol, "Source": sourceCol})  
-  
+
+def load_loxam_file(directory, file):
+    timeCol = []
+    idCol = []
+    nameCol = []
+    actionCol = []
+    sourceCol = []
+
+    newTimes, newIds = loadCanBusTester2CSV(os.path.join(directory, file))
+    
+    names = os.path.splitext(file)[0].split(" ")
+    action = names.pop(-1)
+    name = " ".join(names)
+    
+    timeCol = [*timeCol, *newTimes]
+    idCol = [*idCol, *newIds]
+    nameCol = [*nameCol, *[name for _ in range(len(newTimes))]]
+    actionCol = [*actionCol, *[action for _ in range(len(newTimes))]]
+    sourceCol = [*sourceCol, *["Loxam" for _ in range(len(newTimes))]]
+    return DataFrame({"Time": timeCol, "ID": idCol, "Name": nameCol, "Action": actionCol, "Source": sourceCol})  
+
 def loadCanBusTester2CSV(path: str):
     idCol = []
     hexRe = re.compile(r"\b[0-9A-Fa-f]+\b")
     
+    print(path)
     with open(path, "r", encoding="utf8") as f:
         lines = f.readlines()
     
