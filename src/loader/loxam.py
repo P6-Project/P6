@@ -22,7 +22,7 @@ def loadLoxam(directory: str):
         sourceCol = [*sourceCol, *["Loxam" for _ in range(len(newTimes))]]
     return DataFrame({"Time": timeCol, "ID": idCol, "Name": nameCol, "Action": actionCol, "Source": sourceCol})  
 
-def load_loxam_file(directory, file):
+def loadLoxamFile(directory, file):
     timeCol = []
     idCol = []
     nameCol = []

@@ -1,3 +1,3 @@
-from .loxam import loadLoxam, load_loxam_file
+from .loxam import loadLoxam, loadLoxamFile
 
-__all__ = ["loadLoxam", "load_loxam_file"]
+__all__ = ["loadLoxam", "loadLoxamFile"]
