@@ -48,6 +48,5 @@ if __name__ == "__main__":
     argparser.add_argument("output_folder")
     args = argparser.parse_args()
 
-    if args.output_folder[-1] != '/': args.output_folder += '/'
 
     createAllGraphs(args.input, args.output_folder)
