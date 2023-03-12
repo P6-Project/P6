@@ -10,7 +10,7 @@ def createAllGraphs(inputFile, outputDir):
         fileName = df['Name'].iloc[0]
         canDict = createDictCanPkl(df)
         diagram = createBarDiagramCanIds(canDict, fileName)
-        diagram.savefig(outputDir + fileName + ".png", format="png")
+        diagram.savefig(os.path.join(outputDir,fileName, ".png"), format="png")
 
 def createBarDiagramCanIds(canIdDict, fileName):
     plt.clf()
