@@ -1,19 +1,17 @@
-#Should load known CANBUS ID's from a file and compare them to the data in the pickle file
-#Doing only one machine at the time, if there's a match of more than 5 ID's, then it's a match
-#Else it's not a match
-
 import pickle
 import csv
 import pandas as pd
+import argparse
 
-def loadKnownIDs():
-    with open(r"./knownPGN.csv", "r") as f:
+
+def loadKnownIDs(filePath: str):
+    with open(filePath, "r") as f:
         reader = csv.reader(f)
         knownIDs = list(reader)
         return knownIDs
     
-def importPickledData():
-    with open (r"./src/loxam.pkl", "rb") as f:
+def importPickledData(filePath: str):
+    with open (filePath, "rb") as f:
         loxamData: pd.DataFrame = pickle.load(f)
         return loxamData
     
@@ -31,7 +29,16 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame):
     
         
 if __name__ == "__main__":
-    knownIDs = loadKnownIDs()
-    loxamData = importPickledData()
+    argparse = argparse.ArgumentParser(
+        prog = 'compareJ1939',
+        description = 'Compares known J1939 IDs to loxam data')
+    
+    argparse.add_argument("folder1")
+    argparse.add_argument("folder2")
+    args = argparse.parse_args()
+
+    knownIDs = loadKnownIDs(args.folder1)
+    loxamData = importPickledData(args.folder2)
     compareKnownIDs(knownIDs, loxamData)
+    
     print(loxamData.keys())
