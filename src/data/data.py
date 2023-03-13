@@ -8,9 +8,9 @@ HEXRE = re.compile(r"\b[0-9A-Fa-f]+\b")
 
 def readDirCanData(dirPath: str, nrows: int):
     dfs = []
-    for directory in os.listdir(dirPath):
+    for directory in sorted(os.listdir(dirPath)):
         nextPath = os.path.join(dirPath, directory)
-        for file in os.listdir(nextPath): 
+        for file in sorted(os.listdir(nextPath)): 
             dfs.append(readCSVCanData(os.path.join(nextPath, file), nrows))
     return dfs
 
