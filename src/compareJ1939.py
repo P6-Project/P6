@@ -29,16 +29,17 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame):
     
         
 if __name__ == "__main__":
-    argparse = argparse.ArgumentParser(
+    print("Enter the path to the known J1939 IDs file, and the path to the pickled data file")
+    parser = argparse.ArgumentParser(
         prog = 'compareJ1939',
         description = 'Compares known J1939 IDs to loxam data')
     
-    argparse.add_argument("folder1")
-    argparse.add_argument("folder2")
-    args = argparse.parse_args()
+    parser.add_argument("folder1")
+    parser.add_argument("folder2")
+    args = parser.parse_args()
 
     knownIDs = loadKnownIDs(args.folder1)
     loxamData = importPickledData(args.folder2)
     compareKnownIDs(knownIDs, loxamData)
-    
+
     print(loxamData.keys())
