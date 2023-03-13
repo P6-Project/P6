@@ -1,16 +1,21 @@
-import pandas as pd
-from typing import Sequence
 import math
+from typing import Sequence
+
+import pandas as pd
+
 
 def processData(dfs: list[pd.DataFrame], sampleSize: int):
     return [normalizeDF(limit(df, sampleSize), sampleSize) for df in dfs]
+
 
 def normalizeDF(df: pd.DataFrame, limit: int):
     df["Time"] = normalizeTime(df["Time"], limit)
     return df
 
+
 def limit(df: pd.DataFrame, limit: int):
     return df.head(math.floor(len(df.index) / limit) * limit)
+
 
 def normalizeTime(time: Sequence[str], limit: int):
     first = 0
@@ -25,6 +30,7 @@ def normalizeTime(time: Sequence[str], limit: int):
             nTC.append(norm)
     return nTC
 
+
 def milis(time: str):
     "%H:%M:%S.%f to miliseconds"
     split = time.split(":")
@@ -33,4 +39,4 @@ def milis(time: str):
     split = split[2].split(".")
     second = int(split[0]) * 1000
     milis = int(int(split[1]) / 1000)
-    return hour + minute + second + milis 
+    return hour + minute + second + milis
