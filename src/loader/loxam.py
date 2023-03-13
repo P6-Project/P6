@@ -21,7 +21,7 @@ def loadLoxam(directory: str):
         actionCol = [*actionCol, *[action for _ in range(len(newTimes))]]
         sourceCol = [*sourceCol, *["Loxam" for _ in range(len(newTimes))]]
     return DataFrame({"Time": timeCol, "ID": idCol, "Name": nameCol, "Action": actionCol, "Source": sourceCol})  
-  
+
 def loadCanBusTester2CSV(path: str):
     idCol = []
     hexRe = re.compile(r"\b[0-9A-Fa-f]+\b")
