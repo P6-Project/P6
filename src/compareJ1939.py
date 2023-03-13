@@ -6,8 +6,7 @@ import argparse
 
 def loadKnownIDs(filePath: str):
     with open(filePath, "r") as f:
-        reader = csv.reader(f)
-        knownIDs = list(reader)
+        knownIDs: pd.DataFrame = pd.read_csv(f)
         return knownIDs
     
 def importPickledData(filePath: str):
@@ -15,16 +14,16 @@ def importPickledData(filePath: str):
         loxamData: pd.DataFrame = pickle.load(f)
         return loxamData
     
+def figureOutKnownIDs(knownIDs: pd.DataFrame):
+    print(knownIDs.keys())
+    print(knownIDs['ID_HEX'])
+    
 def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame):
-    for key in loxamData:
-        knownIDs = knownIDs[0]
-        subset = loxamData[key]
-        for key2 in subset:
-            subset2 = subset[key2]
-            set1 = set(subset2['id'])
-            set2 = set(knownIDs)
-            num_matches = len(set1.intersection(set2))
-            print(f"{key} has {num_matches} matches")
+                   
+    for key in loxamData["Name"].unique():
+        matches = pd.merge(knownIDs, loxamData[loxamData["Name"] == key], left_on='ID_HEX', right_on='ID', how='inner')
+        num_matches = len(matches)
+        print(f"{key} has {num_matches} matches")
 
     
         
@@ -41,5 +40,6 @@ if __name__ == "__main__":
     knownIDs = loadKnownIDs(args.folder1)
     loxamData = importPickledData(args.folder2)
     compareKnownIDs(knownIDs, loxamData)
+    #figureOutKnownIDs(knownIDs)
 
     print(loxamData.keys())
