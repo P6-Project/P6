@@ -6,13 +6,13 @@ import pandas as pd
 
 #loading data
 print("loading cars")
-with open("./loxam.pkl", "rb") as f:
+with open("./data.pkl", "rb") as f:
     dataframe: pd.DataFrame = pickle.load(f)
 	
 
 dataframe["ID"] = dataframe["ID"].apply(lambda x: int(x, 16))
-target = dataframe["Name"]
-dataframe = dataframe.drop("Name", axis=1).drop("Source", axis=1).drop("Action", axis=1)
+target = dataframe["Machine"]
+dataframe = dataframe.drop("Machine", axis=1).drop("Source", axis=1).drop("Action", axis=1)
 
 
 

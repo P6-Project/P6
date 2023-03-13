@@ -3,16 +3,20 @@ import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def createAllGraphs(inputFile, outputDir):
+def createAllGraphs(inputFile: str, outputDir: str):
     dfs = createDfs(inputFile)
 
+    absPath = os.path.abspath(outputDir)
+    if not os.path.exists(absPath):
+        os.mkdir(absPath)   
+
     for df in dfs:
-        fileName = df['Name'].iloc[0]
+        fileName = df['Machine'].iloc[0]
         canDict = createDictCanPkl(df)
         diagram = createBarDiagramCanIds(canDict, fileName)
-        diagram.savefig(os.path.join(outputDir,fileName + ".png"), format="png")
+        diagram.savefig(os.path.join(absPath,fileName + ".png"), format="png")
 
-def createBarDiagramCanIds(canIdDict, fileName):
+def createBarDiagramCanIds(canIdDict: dict, fileName: str):
     plt.clf()
     plt.figure().set_figwidth(5 + (len(canIdDict)/10))
     plt.bar(canIdDict.keys(), canIdDict.values(), 0.5)
@@ -24,13 +28,13 @@ def createBarDiagramCanIds(canIdDict, fileName):
     plt.tight_layout() # Else it cuts half of the bottom text.
     return plt
 
-def createDfs(file):
+def createDfs(file) -> list[pd.DataFrame]:
     df:pd.DataFrame = pd.read_pickle(file)
 
-    names = df["Name"].unique()
-    return [df[(df["Name"] == name)] for name in names]
+    names = df["Machine"].unique()
+    return [df[(df["Machine"] == name)] for name in names]
 
-def createDictCanPkl(df):
+def createDictCanPkl(df: pd.DataFrame):
     can_id_dict = dict()
 
     for index, row in df.iterrows():
