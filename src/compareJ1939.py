@@ -13,11 +13,7 @@ def importPickledData(filePath: str):
     with open (filePath, "rb") as f:
         loxamData: pd.DataFrame = pickle.load(f)
         return loxamData
-    
-def figureOutKnownIDs(knownIDs: pd.DataFrame):
-    print(knownIDs.keys())
-    print(knownIDs['ID_HEX'])
-    
+
 def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame):
                    
     for key in loxamData["Name"].unique():
@@ -40,6 +36,3 @@ if __name__ == "__main__":
     knownIDs = loadKnownIDs(args.folder1)
     loxamData = importPickledData(args.folder2)
     compareKnownIDs(knownIDs, loxamData)
-    #figureOutKnownIDs(knownIDs)
-
-    print(loxamData.keys())
