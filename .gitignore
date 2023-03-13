@@ -8,3 +8,4 @@ pythonEnv/
 *.pickle
 *.db
 *.ipynb
+src/graphs/*
