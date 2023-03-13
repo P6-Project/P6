@@ -5,6 +5,8 @@ pythonEnv/
 .DS_Store
 *.pkl
 *.pickle
+.trunk/
+CAN-Data
 
 # Environments
 .env

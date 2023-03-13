@@ -1,24 +1,27 @@
 import pickle
+
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-import pandas as pd
 
-
-#loading data
+# loading data
 print("loading cars")
 with open("./data.pkl", "rb") as f:
     dataframe: pd.DataFrame = pickle.load(f)
-	
+
 
 dataframe["ID"] = dataframe["ID"].apply(lambda x: int(x, 16))
 target = dataframe["Machine"]
-dataframe = dataframe.drop("Machine", axis=1).drop("Source", axis=1).drop("Action", axis=1)
-
+dataframe = (
+    dataframe.drop("Machine", axis=1).drop("Source", axis=1).drop("Action", axis=1)
+)
 
 
 # Splitting data
 print("splitting data")
-data_train, data_test, target_train, target_test = train_test_split(dataframe, target, test_size=0.2)
+data_train, data_test, target_train, target_test = train_test_split(
+    dataframe, target, test_size=0.2
+)
 
 #  Setup and training
 print("setup and training")
