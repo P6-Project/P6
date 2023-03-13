@@ -13,3 +13,9 @@ python ./src/extractor.py PATH-TO-DATA-DIR SAMPLE-SIZE FILE.pkl
 ```sh
 python -m unittest discover -s ./test
 ```
+
+## Creating graphs
+
+```sh
+python .\src\histogram.py picklefile outputpath
+```
