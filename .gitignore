@@ -18,7 +18,4 @@ venv.bak/
 
 *.db
 *.ipynb
-src/graphs/*
-src/graphs
-test/graphs/*
-test/graphs
+graphs/*
