@@ -23,7 +23,7 @@ python .\src\histogram.py picklefile outputpath
 ## Creating model data
 
 ```sh
-python3 ./src/graphplot.py ./src/loxam.pkl ./src/graphs/ ./src/data.pkl
+python ./src/graphplot.py picklefile graphFolder outPickleFile
 ```
 After this, you can run the model
 ```sh
