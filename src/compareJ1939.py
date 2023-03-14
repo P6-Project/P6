@@ -4,24 +4,24 @@ import pickle
 import pandas as pd
 
 
-def loadKnownIDs(filePath: str):
+def loadKnownIDs(filePath: str) -> pd.DataFrame:
     with open(filePath, "r") as f:
         knownIDs: pd.DataFrame = pd.read_csv(f)
         return knownIDs
 
 
-def importPickledData(filePath: str):
+def importPickledData(filePath: str) -> pd.DataFrame:
     with open(filePath, "rb") as f:
-        loxamData: pd.DataFrame = pickle.load(f)
-        return loxamData
+        compareData: pd.DataFrame = pickle.load(f)
+        return compareData
 
 
-def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
+def compareKnownIDs(knownIDs: list, compareData: pd.DataFrame) -> list:
     j1939Machines: list = []
-    for key in loxamData["Name"].unique():
+    for key in compareData["Machine"].unique():
         matches = pd.merge(
             knownIDs,
-            loxamData[loxamData["Name"] == key],
+            compareData[compareData["Machine"] == key],
             left_on="ID_HEX",
             right_on="ID",
             how="inner",
@@ -29,8 +29,8 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
         if (
-            len(loxamData[loxamData["Name"] == key])
-            / (len(loxamData[loxamData["Name"] == key]) - num_matches)
+            len(compareData[compareData["Machine"] == key])
+            / (len(compareData[compareData["Machine"] == key]) - num_matches)
             > 1.2
         ):
             j1939Machines.append(key)
@@ -43,10 +43,11 @@ if __name__ == "__main__":
         prog="compareJ1939", description="Compares known J1939 IDs to loxam data"
     )
 
-    parser.add_argument("KnownIDs")
-    parser.add_argument("loxamData")
+    parser.add_argument("knownIDs")
+    parser.add_argument("compareData")
     args = parser.parse_args()
 
-    knownIDs = loadKnownIDs(args.KnownIDs)
-    loxamData = importPickledData(args.loxamData)
-    compareKnownIDs(knownIDs, loxamData)
+    knownIDs = loadKnownIDs(args.knownIDs)
+    compareData = importPickledData(args.compareData)
+    j1939vehicles: list = compareKnownIDs(knownIDs, compareData)
+    print(j1939vehicles)
