@@ -23,9 +23,9 @@ python .\src\histogram.py picklefile outputpath
 ## Creating model data
 
 ```sh
-python3 ./src/graphplot.py
+python3 ./src/graphplot.py ./src/loxam.pkl ./src/graphs/ ./src/data.pkl
 ```
 After this, you can run the model
 ```sh
-python3 ./src/patternRecognizer.py
+python3 ./src/patternRecognizer.py ./src/data.pkl
 ```

@@ -1,3 +1,5 @@
+import argparse
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -9,23 +11,25 @@ This script takes the dataframe from loxam.pkl and creates graphs from all the d
 It also saves the datasets into a modelData.pkl file
 '''
 
-def createDataRow(subDataframe, id, interval, amountRows):
+
+def createDataRow(subDataframe: pd.DataFrame, id: str, interval: int, amountRows: int):
     dataArray = []
-    for x in range(int(amountRows)):
+    for x in range(amountRows):
         if id in subDataframe["ID"].array[x * interval:x * interval + interval]:
             dataArray.append(1)
         else:
             dataArray.append(0)
     return dataArray
 
-def createDataMatrix(subDataframe, uniqueIds, interval):
+
+def createDataMatrix(subDataframe: pd.DataFrame, uniqueIds: list, interval: int):
     matrix = []
     for id in uniqueIds:
-        matrix.append(createDataRow(subDataframe, id, interval, len(subDataframe.index)/interval))
+        matrix.append(createDataRow(subDataframe, id, interval, int(len(subDataframe.index) / interval)))
     return matrix
 
 
-def createModelData(dataframe, interval, lenOfDataFrames, graphDir):
+def createModelData(dataframe: pd.DataFrame, interval: int, lenOfDataFrames: int, graphDir: str):
     arrayOfMatricies = []
     targets = []
     targetValue = 1
@@ -41,6 +45,7 @@ def createModelData(dataframe, interval, lenOfDataFrames, graphDir):
         targetValue += 1
     return arrayOfMatricies, targets
 
+
 def createGraph(subdataframe, dirname):
     # Apply the default theme
     sns.set_theme()
@@ -48,23 +53,33 @@ def createGraph(subdataframe, dirname):
     # Putting a new figure on the stack
     plt.figure()
 
-    #Plotting the dataframe
+    # Plotting the dataframe
     sns_plot = sns.relplot(
         data=subdataframe,
-        y="ID", x="Time" , col="Action"
+        y="ID", x="Time", col="Action"
     )
 
     plt.savefig(dirname)
     plt.close()
 
+
 if __name__ == "__main__":
-    with open("./src/loxam.pkl", "rb") as f:
+    argparser = argparse.ArgumentParser(
+        prog='Loxam Data Extractor',
+        description='Converts to graphs and model data')
+
+    argparser.add_argument("file")
+    argparser.add_argument("outFolder")
+    argparser.add_argument("outFile")
+    args = argparser.parse_args()
+
+    with open(args.file, "rb") as f:
         dataframe: pd.DataFrame = pickle.load(f)
 
-    if not os.path.exists('./src/graphs'):
-        os.mkdir('./src/graphs')
+    if not os.path.exists(args.outFolder):
+        os.mkdir(args.outFolder)
 
-    modelData = createModelData(dataframe, 10, 1000, "./src/graphs/")
+    modelData = createModelData(dataframe, 10, 1000, args.outFolder)
 
-    with open("./src/modelData.pkl", "wb") as f:
+    with open(args.outFile, "wb") as f:
         pickle.dump(modelData, f, protocol=pickle.HIGHEST_PROTOCOL)

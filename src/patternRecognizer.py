@@ -1,10 +1,18 @@
+import argparse
 import pickle
 import numpy as np
 from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
-with open("./src/modelData.pkl", "rb") as f:
+argparser = argparse.ArgumentParser(
+        prog='Pattern Recognizer Model',
+        description='Creates a model using the data')
+
+argparser.add_argument("file")
+args = argparser.parse_args()
+
+with open(args.file, "rb") as f:
     modelData, target = pickle.load(f)
 
 array = []
