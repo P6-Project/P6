@@ -34,8 +34,7 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
         ):
             j1939Machines.append(key)
         print(f"{key} has {num_matches} matches")
-    print(f"J1939 machines: {j1939Machines}")
-    print(loxamData[loxamData["Name"] == "weidemann 2070LP"])
+    return j1939Machines
 
 
 if __name__ == "__main__":
