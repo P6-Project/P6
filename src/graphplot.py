@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import pickle
+import os
 
 '''
 This script takes the dataframe from loxam.pkl and creates graphs from all the datasets.
@@ -24,7 +25,7 @@ def createDataMatrix(subDataframe, uniqueIds, interval):
     return matrix
 
 
-def createModelData(dataframe, interval, lenOfDataFrames):
+def createModelData(dataframe, interval, lenOfDataFrames, graphDir):
     arrayOfMatricies = []
     targets = []
     targetValue = 1
@@ -35,12 +36,12 @@ def createModelData(dataframe, interval, lenOfDataFrames):
         for subdataframe in listDataframe.__iter__():
             targets.append(targetValue)
             arrayOfMatricies.append(createDataMatrix(subdataframe, dataframe["ID"].unique(), interval))
-            createGraph(subdataframe, f'{subdataframe["Name"].iloc[0]} {n}')
+            createGraph(subdataframe, graphDir + f'{subdataframe["Name"].iloc[0]} {n}')
             n += 1
         targetValue += 1
     return arrayOfMatricies, targets
 
-def createGraph(subdataframe, filename):
+def createGraph(subdataframe, dirname):
     # Apply the default theme
     sns.set_theme()
 
@@ -53,14 +54,17 @@ def createGraph(subdataframe, filename):
         y="ID", x="Time" , col="Action"
     )
 
-    plt.savefig(f'../../graphs/{filename}.png')
+    plt.savefig(dirname)
     plt.close()
 
 if __name__ == "__main__":
     with open("./src/loxam.pkl", "rb") as f:
         dataframe: pd.DataFrame = pickle.load(f)
 
-    modelData = createModelData(dataframe, 10, 1000)
+    if not os.path.exists('./src/graphs'):
+        os.mkdir('./src/graphs')
+
+    modelData = createModelData(dataframe, 10, 1000, "./src/graphs/")
 
     with open("./src/modelData.pkl", "wb") as f:
         pickle.dump(modelData, f, protocol=pickle.HIGHEST_PROTOCOL)

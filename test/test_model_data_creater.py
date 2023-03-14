@@ -1,6 +1,9 @@
 import unittest
 import pandas as pd
 from src.graphplot import createDataRow, createDataMatrix, createModelData
+import os
+import shutil
+
 
 bentley = pd.DataFrame({
     "Time": ["11:44:59.000000", "11:45:00.000000", "11:45:01.000000", "11:45:01.000000", "11:46:41.000000",
@@ -68,6 +71,9 @@ class ModelDataCreaterTester(unittest.TestCase):
                                [0, 0, 1, 0, 1]])
 
     def test_createModelData(self):
+        # Create dir
+        os.mkdir("./test/testGraphs")
+
         bentley_matrix = [[1, 1], [1, 1], [1, 1], [0, 1], [0, 1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
                           [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
         ferrari_matrix = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [0, 0],
@@ -81,6 +87,9 @@ class ModelDataCreaterTester(unittest.TestCase):
 
         modelData = [bentley_matrix, ferrari_matrix, lamborghini_matrix, renault_matrix]
         outModelData, outTarget = createModelData(
-            pd.concat([bentley, ferrari, lamborghini, renault], ignore_index=True, sort=False), 5, 10)
+            pd.concat([bentley, ferrari, lamborghini, renault], ignore_index=True, sort=False), 5, 10, "./test/testGraphs/")
         self.assertEqual(outTarget, target)
         self.assertEqual(outModelData, modelData)
+
+        # Deletes dir
+        shutil.rmtree("./test/testGraphs")
