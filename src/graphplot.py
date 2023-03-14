@@ -33,14 +33,14 @@ def createModelData(dataframe: pd.DataFrame, interval: int, lenOfDataFrames: int
     arrayOfMatricies = []
     targets = []
     targetValue = 1
-    for name in dataframe["Name"].unique():
-        nameDataframe = dataframe.loc[dataframe["Name"] == name]
+    for name in dataframe["Machine"].unique():
+        nameDataframe = dataframe.loc[dataframe["Machine"] == name]
         listDataframe = [nameDataframe[i:i + lenOfDataFrames] for i in range(0, len(nameDataframe), lenOfDataFrames)]
         n = 1
         for subdataframe in listDataframe.__iter__():
             targets.append(targetValue)
             arrayOfMatricies.append(createDataMatrix(subdataframe, dataframe["ID"].unique(), interval))
-            createGraph(subdataframe, graphDir + f'{subdataframe["Name"].iloc[0]} {n}')
+            createGraph(subdataframe, graphDir + f'{subdataframe["Machine"].iloc[0]} {n}')
             n += 1
         targetValue += 1
     return arrayOfMatricies, targets
