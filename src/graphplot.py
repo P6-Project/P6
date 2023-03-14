@@ -1,44 +1,44 @@
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import pickle
 
 '''
 This script takes the dataframe from loxam.pkl and creates graphs from all the datasets.
-It also saves the datasets into a data.pkl file
+It also saves the datasets into a modelData.pkl file
 '''
 
-def createDataRow(subDataframe, id):
+def createDataRow(subDataframe, id, interval, amountRows):
     dataArray = []
-    for x in range(100):
-        if id in subDataframe["ID"].array[x * 10:x * 10 + 10]:
+    for x in range(int(amountRows)):
+        if id in subDataframe["ID"].array[x * interval:x * interval + interval]:
             dataArray.append(1)
         else:
             dataArray.append(0)
     return dataArray
 
-def createDataMatrix(subDataframe, uniqueIds):
+def createDataMatrix(subDataframe, uniqueIds, interval):
     matrix = []
     for id in uniqueIds:
-        matrix.append(createDataRow(subDataframe, id))
+        matrix.append(createDataRow(subDataframe, id, interval, len(subDataframe.index)/interval))
     return matrix
 
 
-def createModelData(dataframe):
+def createModelData(dataframe, interval, lenOfDataFrames):
     arrayOfMatricies = []
     targets = []
     targetValue = 1
     for name in dataframe["Name"].unique():
         nameDataframe = dataframe.loc[dataframe["Name"] == name]
-        listDataframe = [nameDataframe[i:i + 1000] for i in range(0, len(nameDataframe), 1000)]
+        listDataframe = [nameDataframe[i:i + lenOfDataFrames] for i in range(0, len(nameDataframe), lenOfDataFrames)]
         n = 1
         for subdataframe in listDataframe.__iter__():
             targets.append(targetValue)
-            arrayOfMatricies.append(createDataMatrix(subdataframe, dataframe["ID"].unique()))
+            arrayOfMatricies.append(createDataMatrix(subdataframe, dataframe["ID"].unique(), interval))
             createGraph(subdataframe, f'{subdataframe["Name"].iloc[0]} {n}')
             n += 1
         targetValue += 1
-    return arrayOfMatricies,targets
+    return arrayOfMatricies, targets
 
 def createGraph(subdataframe, filename):
     # Apply the default theme
@@ -56,11 +56,11 @@ def createGraph(subdataframe, filename):
     plt.savefig(f'./graphs/{filename}.png')
     plt.close()
 
+if __name__ == "__main__":
+    with open("./src/loxam.pkl", "rb") as f:
+        dataframe: pd.DataFrame = pickle.load(f)
 
-with open("./loxam.pkl", "rb") as f:
-    dataframe: pd.DataFrame = pickle.load(f)
+    modelData = createModelData(dataframe, 10, 1000)
 
-modelData = createModelData(dataframe)
-
-with open("data.pkl", "wb") as f:
-    pickle.dump(modelData, f, protocol=pickle.HIGHEST_PROTOCOL)
+    with open("./src/modelData.pkl", "wb") as f:
+        pickle.dump(modelData, f, protocol=pickle.HIGHEST_PROTOCOL)

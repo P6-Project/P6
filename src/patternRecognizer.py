@@ -4,7 +4,7 @@ from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
-with open("./data.pkl", "rb") as f:
+with open("./src/modelData.pkl", "rb") as f:
     modelData, target = pickle.load(f)
 
 array = []

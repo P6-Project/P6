@@ -19,3 +19,13 @@ python -m unittest discover -s ./test
 ```sh
 python .\src\histogram.py picklefile outputpath
 ```
+
+## Creating model data
+
+```sh
+python3 ./src/graphplot.py
+```
+After this, you can run the model
+```sh
+python3 ./src/patternRecognizer.py
+```
