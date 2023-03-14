@@ -54,7 +54,7 @@ renault = pd.DataFrame({
 class ModelDataCreaterTester(unittest.TestCase):
 
     def test_createDataRow(self):
-        out = createDataRow(renault, "18fec4c0", 2, 10 / 2)
+        out = createDataRow(renault, "18fec4c0", 2, int(10 / 2))
         self.assertEqual(out, [0, 1, 0, 1, 0])
         out = createDataRow(renault, "1234", 1, 10)
         self.assertEqual(out, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
