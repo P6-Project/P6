@@ -27,7 +27,7 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
             how="inner",
         )
         num_matches = len(matches)
-        #1.2 is not set in stone, but it holds for the current data
+        # 1.2 is not set in stone, but it holds for the current data
         if (
             len(loxamData[loxamData["Name"] == key])
             / (len(loxamData[loxamData["Name"] == key]) - num_matches)
@@ -37,16 +37,16 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
         print(f"{key} has {num_matches} matches")
     return j1939Machines
 
- 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="compareJ1939", description="Compares known J1939 IDs to loxam data"
     )
 
-    parser.add_argument("folder1")
-    parser.add_argument("folder2")
+    parser.add_argument("KnownIDs")
+    parser.add_argument("loxamData")
     args = parser.parse_args()
 
-    knownIDs = loadKnownIDs(args.folder1)
-    loxamData = importPickledData(args.folder2)
+    knownIDs = loadKnownIDs(args.KnownIDs)
+    loxamData = importPickledData(args.loxamData)
     compareKnownIDs(knownIDs, loxamData)
