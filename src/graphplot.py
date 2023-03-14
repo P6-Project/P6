@@ -46,7 +46,7 @@ def createModelData(dataframe: pd.DataFrame, interval: int, lenOfDataFrames: int
     return arrayOfMatricies, targets
 
 
-def createGraph(subdataframe, dirname):
+def createGraph(subdataframe: pd.DataFrame, dirname: str):
     # Apply the default theme
     sns.set_theme()
 
