@@ -1,10 +1,12 @@
 from datetime import datetime
+import pytz
 
 TIMEFORMAT = "%H:%M:%S.%f"
 
 def CSUDateParser(date: str):
     d: float = float(date.replace("(", "").replace(")", ""))
-    return datetime.fromtimestamp(d).strftime(TIMEFORMAT)
+    time = datetime.fromtimestamp(d, tz=pytz.utc)
+    return time.astimezone(pytz.timezone("Europe/Copenhagen")).strftime(TIMEFORMAT)
 
 def CSUIDParser(id: str):
     return id.split("#")[0]
