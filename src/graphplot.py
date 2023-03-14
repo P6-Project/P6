@@ -53,7 +53,7 @@ def createGraph(subdataframe, filename):
         y="ID", x="Time" , col="Action"
     )
 
-    plt.savefig(f'./graphs/{filename}.png')
+    plt.savefig(f'../graphs/{filename}.png')
     plt.close()
 
 if __name__ == "__main__":
