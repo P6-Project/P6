@@ -11,10 +11,9 @@ def createAllGraphs(inputFile: str, outputDir: str):
         os.mkdir(absPath)   
 
     for df in dfs:
-        fileName = df['Machine'].iloc[0]
-        canDict = createDictCanPkl(df)
-        diagram = createBarDiagramCanIds(canDict, fileName)
-        diagram.savefig(os.path.join(absPath,fileName + ".png"), format="png")
+        fileName = df['Machine'].iloc[0] + " " + df['Action'].iloc[0]
+        diagram = createBarDiagramCanIds(createDictCanPkl(df), fileName)
+        diagram.savefig(os.path.join(absPath,fileName + ".png"), format="png") # high resulution pics: add "dpi=1200" (slow).
 
 def createBarDiagramCanIds(canIdDict: dict, fileName: str):
     plt.clf()
@@ -30,11 +29,19 @@ def createBarDiagramCanIds(canIdDict: dict, fileName: str):
 
 def createDfs(file) -> list[pd.DataFrame]:
     df:pd.DataFrame = pd.read_pickle(file)
+    dfs = list()
 
     names = df["Machine"].unique()
-    return [df[(df["Machine"] == name)] for name in names]
+    df_machines:pd.DataFrame = [df[(df["Machine"] == name)] for name in names]
 
-def createDictCanPkl(df: pd.DataFrame):
+    for index, machine in enumerate(df_machines):
+        actions = machine["Action"].unique()
+        for action in actions:
+            dfs.append(machine[(machine["Action"] == action)])
+            
+    return dfs
+
+def createDictCanPkl(df: pd.DataFrame) -> dict():
     can_id_dict = dict()
 
     for index, row in df.iterrows():
