@@ -18,3 +18,5 @@ venv.bak/
 
 *.db
 *.ipynb
+dist/
+*.egg-info
