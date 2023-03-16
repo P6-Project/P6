@@ -28,7 +28,8 @@ def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="compareJ1939", description="Compares known J1939 IDs to loxam data",
+        prog="compareJ1939",
+        description="Compares known J1939 IDs to loxam data",
     )
 
     parser.add_argument("KnownIDs", help="Path to known J1939 IDs")
@@ -44,7 +45,6 @@ if __name__ == "__main__":
         knownIDs = importPickledData("./knownIDs.pkl")
     else:
         knownIDs = importPickledData(args.KnownIDs)
-
 
     loxamData = importPickledData(args.loxamData)
     compareKnownIDs(knownIDs, loxamData)
