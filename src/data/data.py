@@ -1,10 +1,25 @@
 import pandas as pd
-import os, re
+import os
+import re
+import pickle
 from .parser import (CSUDateParser, CSUIDParser, 
                      loxamDateParser, dateParser, 
                      renaultIDParser)
 
 HEXRE = re.compile(r"\b[0-9A-Fa-f]+\b")
+
+def importPickledData(filePath: str):
+    with open(filePath, "rb") as f:
+        pickledData: pd.DataFrame = pickle.load(f)
+        return pickledData
+
+def readCSVGeneral(path: str, colnames: list):
+    df : pd.DataFrame = pd.read_csv(path, sep=",", usecols=colnames)
+    return df
+
+def generatePickledData(dataFrame: pd.DataFrame, name: str):
+    with open(f"./{name}.pkl", "wb") as f:
+        pickle.dump(dataFrame, f, protocol=2)
 
 def readDirCanData(dirPath: str, nrows: int):
     dfs = []

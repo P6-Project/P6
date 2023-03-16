@@ -2,26 +2,15 @@ import argparse
 import pickle
 
 import pandas as pd
+from data.data import readCSVGeneral, generatePickledData, importPickledData
 
 
-def loadKnownIDs(filePath: str) -> pd.DataFrame:
-    with open(filePath, "r") as f:
-        knownIDs: pd.DataFrame = pd.read_csv(f)
-        return knownIDs
-
-
-def importPickledData(filePath: str) -> pd.DataFrame:
-    with open(filePath, "rb") as f:
-        compareData: pd.DataFrame = pickle.load(f)
-        return compareData
-
-
-def compareKnownIDs(knownIDs: list, compareData: pd.DataFrame) -> list:
+def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
     j1939Machines: list = []
-    for key in compareData["Machine"].unique():
+    for key in loxamData["Machine"].unique():
         matches = pd.merge(
             knownIDs,
-            compareData[compareData["Machine"] == key],
+            loxamData[loxamData["Machine"] == key],
             left_on="ID_HEX",
             right_on="ID",
             how="inner",
@@ -29,8 +18,8 @@ def compareKnownIDs(knownIDs: list, compareData: pd.DataFrame) -> list:
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
         if (
-            len(compareData[compareData["Machine"] == key])
-            / (len(compareData[compareData["Machine"] == key]) - num_matches)
+            len(loxamData[loxamData["Machine"] == key])
+            / (len(loxamData[loxamData["Machine"] == key]) - num_matches)
             > 1.2
         ):
             j1939Machines.append(key)
@@ -40,14 +29,23 @@ def compareKnownIDs(knownIDs: list, compareData: pd.DataFrame) -> list:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="compareJ1939", description="Compares known J1939 IDs to loxam data"
+        prog="compareJ1939", description="Compares known J1939 IDs to loxam data",
     )
 
-    parser.add_argument("knownIDs")
-    parser.add_argument("compareData")
+    parser.add_argument("KnownIDs", help="Path to known J1939 IDs")
+    parser.add_argument("loxamData", help="Path to loxam data")
     args = parser.parse_args()
 
-    knownIDs = loadKnownIDs(args.knownIDs)
-    compareData = importPickledData(args.compareData)
-    j1939vehicles: list = compareKnownIDs(knownIDs, compareData)
-    print(j1939vehicles)
+    if args.KnownIDs is None or args.loxamData is None:
+        parser.print_help()
+        exit(1)
+    elif args.KnownIDs.endswith(".csv"):
+        knownIDs = readCSVGeneral(args.KnownIDs, ["ID_HEX"])
+        generatePickledData(knownIDs, "knownIDs")
+        knownIDs = importPickledData("./knownIDs.pkl")
+    else:
+        knownIDs = importPickledData(args.KnownIDs)
+
+
+    loxamData = importPickledData(args.loxamData)
+    compareKnownIDs(knownIDs, loxamData)
