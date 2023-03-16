@@ -54,8 +54,8 @@ def createDictCanPkl(df: pd.DataFrame) -> dict():
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(
-        prog = "Histograms over different vehicle readings",
-        description = "Create histograms for each vehicle readings from a pickle format")
+        prog = "Histograms over different vehicles readings",
+        description = "Create histograms for each vehicles readings from a pickle format")
 
     argparser.add_argument("input", help = "Input file containing data in a pickle format.")
     argparser.add_argument("output_folder", help = "Directory to output graphs.")
