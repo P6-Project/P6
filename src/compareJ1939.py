@@ -1,11 +1,10 @@
 import argparse
-import pickle
 
 import pandas as pd
-from data.data import readCSVGeneral, generatePickledData, importPickledData
+from .data.data import readCSVGeneral, generatePickledData, importPickledData
 
 
-def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
+def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
     j1939Machines: list = []
     for key in loxamData["Machine"].unique():
         matches = pd.merge(
