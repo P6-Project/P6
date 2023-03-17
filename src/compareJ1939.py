@@ -5,8 +5,11 @@ import pandas as pd
 from data.data import readCSVGeneral, generatePickledData, importPickledData
 
 
-def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
+def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
     j1939Machines: list = []
+    compare: dict = {}
+    for key in knownIDs["ID_HEX"].unique():
+        compare[key] = [0, set([])]
     for key in loxamData["Machine"].unique():
         matches = pd.merge(
             knownIDs,
@@ -15,6 +18,9 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
             right_on="ID",
             how="inner",
         )
+        for match in matches["ID_HEX"]:
+            compare[match][0] = compare[match][0] + 1
+            compare[match][1] = compare[match][1].union(set([key]))
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
         if (
@@ -23,7 +29,11 @@ def compareKnownIDs(knownIDs: list, loxamData: pd.DataFrame) -> list:
             > 1.2
         ):
             j1939Machines.append(key)
-        print(f"{key} has {num_matches} matches")
+
+    for key in compare:
+        if compare[key][0] != 0:
+            print(f"{key} has {compare[key]} matches")
+
     return j1939Machines
 
 
@@ -45,7 +55,6 @@ if __name__ == "__main__":
         knownIDs = importPickledData("./knownIDs.pkl")
     else:
         knownIDs = importPickledData(args.KnownIDs)
-
 
     loxamData = importPickledData(args.loxamData)
     compareKnownIDs(knownIDs, loxamData)
