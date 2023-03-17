@@ -9,7 +9,7 @@ def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
     j1939Machines: list = []
     compare: dict = {}
     for key in knownIDs["ID_HEX"].unique():
-        compare[key] = [0, set([])]
+        compare[key] = [0, {}]
     for key in loxamData["Machine"].unique():
         matches = pd.merge(
             knownIDs,
@@ -20,7 +20,9 @@ def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
         )
         for match in matches["ID_HEX"]:
             compare[match][0] = compare[match][0] + 1
-            compare[match][1] = compare[match][1].union(set([key]))
+            if key not in compare[match][1]:
+                compare[match][1][key] = 0
+            compare[match][1][key] += 1
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
         if (
