@@ -10,35 +10,31 @@ def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame, set_flag: i
         indexKey = "ID"
     j1939Machines: list = []
     compare: dict = {}
-    for key in knownIDs[indexKey].unique():
-        compare[key] = [0, {}]
-    for key in loxamData["Machine"].unique():
-        if(set_flag != 1):
-            print(f"Machine: {key}")
+    for id in knownIDs[indexKey].unique():
+        compare[id] = [0, {}]
+    for machine in loxamData["Machine"].unique():
         matches = pd.merge(
             knownIDs,
-            loxamData[loxamData["Machine"] == key],
+            loxamData[loxamData["Machine"] == machine],
             left_on=indexKey,
             right_on="ID",
             how="inner",
         )
-        if(set_flag != 1):
-            print(f"Matches: {matches}")
         for match in matches[indexKey]:
             compare[match][0] += 1
-            if key not in compare[match][1]:
-                compare[match][1][key] = 0
-            compare[match][1][key] += 1
+            if machine not in compare[match][1]:
+                compare[match][1][machine] = 0
+            compare[match][1][machine] += 1
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
         try:
             if (
-                len(loxamData[loxamData["Machine"] == key])
-                / (len(loxamData[loxamData["Machine"] == key]) - num_matches)
+                len(loxamData[loxamData["Machine"] == machine])
+                / (len(loxamData[loxamData["Machine"] == machine]) - num_matches)
                 > 1.2
 
             ):
-                j1939Machines.append(key)
+                j1939Machines.append(machine)
         except ZeroDivisionError:
             pass
 
