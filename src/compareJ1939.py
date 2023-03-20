@@ -1,42 +1,63 @@
 import argparse
-import pickle
-
 import pandas as pd
 from data.data import readCSVGeneral, generatePickledData, importPickledData
 
 
-def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame) -> list:
+def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame, set_flag: int) -> list:
+    if(set_flag == 1):
+        indexKey = "ID_HEX"
+    else:
+        indexKey = "ID"
     j1939Machines: list = []
     compare: dict = {}
-    for key in knownIDs["ID_HEX"].unique():
+    for key in knownIDs[indexKey].unique():
         compare[key] = [0, {}]
     for key in loxamData["Machine"].unique():
+        if(set_flag != 1):
+            print(f"Machine: {key}")
         matches = pd.merge(
             knownIDs,
             loxamData[loxamData["Machine"] == key],
-            left_on="ID_HEX",
+            left_on=indexKey,
             right_on="ID",
             how="inner",
         )
-        for match in matches["ID_HEX"]:
+        if(set_flag != 1):
+            print(f"Matches: {matches}")
+        for match in matches[indexKey]:
             compare[match][0] = compare[match][0] + 1
             if key not in compare[match][1]:
                 compare[match][1][key] = 0
             compare[match][1][key] += 1
         num_matches = len(matches)
         # 1.2 is not set in stone, but it holds for the current data
-        if (
-            len(loxamData[loxamData["Machine"] == key])
-            / (len(loxamData[loxamData["Machine"] == key]) - num_matches)
-            > 1.2
-        ):
-            j1939Machines.append(key)
+        try:
+            if (
+                len(loxamData[loxamData["Machine"] == key])
+                / (len(loxamData[loxamData["Machine"] == key]) - num_matches)
+                > 1.2
+
+            ):
+                j1939Machines.append(key)
+        except ZeroDivisionError:
+            pass
 
     for key in compare:
         if compare[key][0] != 0:
             print(f"{key} has {compare[key]} matches")
 
     return j1939Machines
+
+
+def delimitData(loxamData: pd.DataFrame, identifiedMachines: list) -> list:
+    knownIDs : pd.Dataframe =  {"ID": []}
+    knownIDs = pd.DataFrame(knownIDs)
+    for key in loxamData["Machine"].unique():
+        if key in identifiedMachines:
+            loxamData = loxamData[loxamData["Machine"] != key]
+
+    knownIDs["ID"] = loxamData["ID"].unique()
+    return [knownIDs,loxamData]
 
 
 if __name__ == "__main__":
@@ -59,4 +80,8 @@ if __name__ == "__main__":
         knownIDs = importPickledData(args.KnownIDs)
 
     loxamData = importPickledData(args.loxamData)
-    compareKnownIDs(knownIDs, loxamData)
+    j1939 = compareKnownIDs(knownIDs, loxamData, 1)
+    knownIDs = delimitData(loxamData, j1939)[0]
+    loxamData = delimitData(loxamData, j1939)[1]
+    openCanish = compareKnownIDs(knownIDs, loxamData, 0)
+    print(openCanish)
