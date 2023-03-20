@@ -25,7 +25,7 @@ def compareKnownIDs(knownIDs: pd.DataFrame, loxamData: pd.DataFrame, set_flag: i
         if(set_flag != 1):
             print(f"Matches: {matches}")
         for match in matches[indexKey]:
-            compare[match][0] = compare[match][0] + 1
+            compare[match][0] += 1
             if key not in compare[match][1]:
                 compare[match][1][key] = 0
             compare[match][1][key] += 1
