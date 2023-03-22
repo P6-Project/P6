@@ -8,7 +8,7 @@ def importRowFromXls(path: str, sheetName: str):
     return df
 
 def pruneHex(hexValues: list):
-    return [element[2:-2] for element in hexValues if len(element) > 4]
+    return [element[2:-2]  if len(element) > 4 else element for element in hexValues]
 
 def importMachinesPkl(path: str):
     with open(path, "rb") as f:
@@ -19,22 +19,33 @@ def castHextoInt(hexValues: list):
     return [int(element, 16) for element in hexValues]    
 
 def compareKnownPGNs(pgn: pd.DataFrame, machines: pd.DataFrame):
-    matches = {}
     machines = pd.DataFrame(machines)
-    for machine in machines:
-        matches[machine] = 0
-        for elem in pgn:
-            for action in machines[machine]:
-                if not isinstance(action, float):
-                    if elem in action["id"]:
-                        matches[machine] += 1
-    print(matches)
+    compare : dict = {}
+    print(machines)
+    for machine in machines["Machine"].unique():
+        compare[machine] = 0
+        matches = pd.merge(
+            pgn,
+            machines[machines["Machine"] == machine],
+            left_on="PGN",
+            right_on="ID",
+            how="inner",
+        )
+        for match in matches["Machine"]:
+            compare[machine] += 1
+        num_matches = len(matches)
+        
+    print(compare)    
+
+def removeOx(hexValues : list):
+    return[value[2:] if value.startswith("0x") else value for value in hexValues]
+
 
 def pruneMachineIDHex(machines: pd.DataFrame):
-    for key in machines:
-        machines[key]["id"] = pruneHex(machines[key]["id"])
-        machines[key]["id"] = castHextoInt(machines[key]["id"])
-       # print(machines[key]["id"])
+    machines["ID"] = removeOx(machines["ID"])
+    machines["ID"] = pruneHex(machines["ID"])
+    machines["ID"] = castHextoInt(machines["ID"])
+       
     return machines
         
 
@@ -42,9 +53,8 @@ def pruneMachineIDHex(machines: pd.DataFrame):
 if __name__ == "__main__":
     with open ("./pgn.pkl", "rb") as f:
         pgn : pd.DataFrame = pd.read_pickle(f)
-        machine : pd.DataFrame = importMachinesPkl("./machines.pkl")
-        for key in machine:
-            key = pruneMachineIDHex(machine[key])
+        machine : pd.DataFrame = importMachinesPkl("./out.pkl")
+        machine = pruneMachineIDHex(machine)
         compareKnownPGNs(pgn, machine)
     
 
