@@ -81,3 +81,4 @@ if __name__ == "__main__":
     loxamData = delimitData(loxamData, j1939)[1]
     openCanish = compareKnownIDs(knownIDs, loxamData, 0)
     print(openCanish)
+
