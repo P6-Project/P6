@@ -1,61 +1,67 @@
 import pandas as pd
-import pickle
-import os
 
-
-def importRowFromXls(path: str, sheetName: str):
-    df: pd.DataFrame = pd.read_excel(path, sheet_name=sheetName, skiprows=3)
-    return df
-
-def pruneHex(hexValues: list):
-    return [element[2:-2]  if len(element) > 4 else element for element in hexValues]
-
-def importMachinesPkl(path: str):
-    with open(path, "rb") as f:
-        machines: pd.DataFrame = pickle.load(f)
-        return machines
-
-def castHextoInt(hexValues: list):
-    return [int(element, 16) for element in hexValues]    
 
 def compareKnownPGNs(pgn: pd.DataFrame, machines: pd.DataFrame):
-    machines = pd.DataFrame(machines)
-    compare : dict = {}
-    print(machines)
-    for machine in machines["Machine"].unique():
-        compare[machine] = 0
+    matches = pd.DataFrame()
+    matches1 = pd.DataFrame()
+    print(pgn)
+    for m in machines["Machine"].unique():
+        print(f"Machine: {m} has {len(machines[machines['Machine'] == m])} IDs")
         matches = pd.merge(
             pgn,
-            machines[machines["Machine"] == machine],
+            machines[machines["Machine"] == m],
             left_on="PGN",
             right_on="ID",
             how="inner",
         )
-        for match in matches["Machine"]:
-            compare[machine] += 1
-        num_matches = len(matches)
-        
-    print(compare)    
+        matches1 = pd.concat([matches1, matches], ignore_index=True)
+    for m in matches1["Machine"].unique():
+        print(f"{m} has {len(matches1[matches1['Machine'] == m])} matches")
+    
+    
+    
+    
 
-def removeOx(hexValues : list):
-    return[value[2:] if value.startswith("0x") else value for value in hexValues]
+def hex_to_bin(hex_string):
+    binary = bin(int(hex_string, 16))[2:]
+    return '{:0>29}'.format(binary)
 
+def bin_to_PGN(bin_string):
+    return bin_string[9:25]
 
-def pruneMachineIDHex(machines: pd.DataFrame):
-    machines["ID"] = removeOx(machines["ID"])
-    machines["ID"] = pruneHex(machines["ID"])
-    machines["ID"] = castHextoInt(machines["ID"])
-       
-    return machines
-        
+def bin_to_int(bin_string):
+    return int(bin_string, 2)
 
+def main(flag: int = 0 ):
+    pgn : pd.DataFrame = pd.read_pickle("./pgn.pkl")
+    if flag == 1:
+        pgn = pgn.drop_duplicates()
+    else:
+        x = 0
+        for i, p in enumerate(pgn):
+            if i == 0:
+                continue
+            if p == pgn[i-1]:
+                x += 1
+        print(x)
+    machine : pd.DataFrame = pd.read_pickle("./data.pkl")
+    m : pd.DataFrame = machine.loc[:, ["Machine", "ID"]]
+    uniqueID: pd.DataFrame = pd.DataFrame(columns=["Machine", "ID"])
+    i = 0
+    for machine in m["Machine"].unique():
+        for id in m[m["Machine"] == machine]["ID"].unique():
+            uniqueID = pd.concat([uniqueID, pd.DataFrame({"Machine": [machine], "ID": [id]})], ignore_index=True)
+    uniqueID["ID"] = uniqueID["ID"].apply(hex_to_bin).apply(bin_to_PGN).apply(bin_to_int)
+    compareKnownPGNs(pgn, uniqueID)
 
 if __name__ == "__main__":
-    with open ("./pgn.pkl", "rb") as f:
-        pgn : pd.DataFrame = pd.read_pickle(f)
-        machine : pd.DataFrame = importMachinesPkl("./out.pkl")
-        machine = pruneMachineIDHex(machine)
-        compareKnownPGNs(pgn, machine)
+    main()
+    main(1)
+    
+        
+               
+        
+    
     
 
     
