@@ -18,12 +18,13 @@ def compareKnownPGNs(pgn: pd.DataFrame, machines: pd.DataFrame):
     for m in matches1["Machine"].unique():
         print(f"{m} has {len(matches1[matches1['Machine'] == m])} matches")
     
-    
-    
-    
 
 def hex_to_bin(hex_string):
     binary = bin(int(hex_string, 16))[2:]
+    if len(binary) < 20:
+        print('{:0>8}{:0<21}'.format('', binary))
+        return '{:0>8}{:0<21}'.format('', binary)
+    print('{:0>29}'.format(binary))
     return '{:0>29}'.format(binary)
 
 def bin_to_PGN(bin_string):
