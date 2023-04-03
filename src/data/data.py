@@ -1,3 +1,5 @@
+import gzip
+import pickle
 import pandas as pd
 import os
 from datetime import timedelta
@@ -8,7 +10,7 @@ known_J1939 : list = ["CSS Electronics"]
 def load_pklgz(root : str, delimiter : bool = True) -> list:
     dfs : list = []
     for files in os.listdir(root):
-        if(files.find("binaryMatrix") != -1):
+        if(files.find("timeNormalized") != -1 ):
             filepath = os.path.join(root, files)
             dfs.append(pd.read_pickle(filepath))
     return dfs
@@ -20,22 +22,26 @@ def main(runFlag: bool = True):
         if(runFlag == False):
             normalize_time(d)
             pd.to_pickle(d, "./data/dfs/" + d["Machine"].unique()[0] + " timeNormalized" + ".pkl.gz")
-            make_binary_matrix(d)
+        make_binary_matrix(d)
                   
 def add_label_to_binary_matrix():
     labelDict : dict = {}
     for files in os.listdir("./data/dfs"):
-        if(files.find("binaryMatrix") == -1 and files.find("timeNormalized") == -1):
-            df : pd.DataFrame = pd.read_pickle("./data/dfs/" + files)
-            if df['Source'].eq("CSS Electronics").all():
-                a = df['Machine'].to_list()
-                labelDict[a[0]] = "J1939"
-            elif df["Machine"].isin(known_other).any():
-                a = df['Machine'].to_list()
-                labelDict[a[0]] = "Other"
-            else:
-                a = df['Machine'].to_list()
-                labelDict[a[0]] = "Unknown"
+        try:
+            if(files.find("binaryMatrix") == -1 and files.find("timeNormalized") == -1):
+                df : pd.DataFrame = pd.read_pickle("./data/dfs/" + files)
+                if df['Source'].eq("CSS Electronics").all():
+                    a = df['Machine'].to_list()
+                    labelDict[a[0]] = "J1939"
+                elif df["Machine"].isin(known_other).any():
+                    a = df['Machine'].to_list()
+                    labelDict[a[0]] = "Other"
+                else:
+                    a = df['Machine'].to_list()
+                    labelDict[a[0]] = "Unknown"
+        except gzip.BadGzipFile as f:
+            print("UnpicklingError: " + files)
+            break
     for files in os.listdir("./data/dfs"):
         if(files.find("binaryMatrix") != -1 ):
             for keys in labelDict.keys():
@@ -47,7 +53,7 @@ def add_label_to_binary_matrix():
                     pd.to_pickle(df, "./data/dfs/" + files)
     return df
 
-def make_binary_matrix(df: pd.DataFrame, interval: int = 5000) -> pd.DataFrame:
+def make_binary_matrix(df: pd.DataFrame, interval: int = 500) -> pd.DataFrame:
     # Create a new column with time intervals 
     bin_matrix : pd.DataFrame = pd.DataFrame()
     columns : list = [time for time in range(0, int(df["Time"].max()), interval)] 
@@ -86,5 +92,5 @@ def normalize_time(df):
 if __name__ == "__main__":
     #print pwd
     print("pwd=" + os.getcwd())
-    add_label_to_binary_matrix()
     main()    
+    add_label_to_binary_matrix()
