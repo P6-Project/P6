@@ -1,13 +1,13 @@
+import pickle
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
-def train_model():
+def train_model() -> SVC:
     for filename in os.listdir("./data/dfs"):
         train_dfs = []
         test_dfs = []
-        cols = []
         for filename in os.listdir("./data/dfs"):
             if filename.find("binaryMatrix") != -1:
                 try:
@@ -29,6 +29,8 @@ def train_model():
     print(y_test.head(100))
     svm = SVC(kernel='linear', C=1, random_state=42)
     svm.fit(X_train, y_train)
+    with open("./data/model.pkl", "wb") as f:
+        pickle.dump(svm, f)
 
     score = svm.score(X_test, y_test)
     print("Accuracy: " + str(score))

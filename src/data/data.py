@@ -3,6 +3,7 @@ import pickle
 import pandas as pd
 import os
 from datetime import timedelta
+from data.processing import normalizeDF
 
 known_other : list = ["Houlotte lift", "Case stor", "Weidemann Ehofftrek 1160"]
 known_J1939 : list = ["CSS Electronics"]
@@ -20,7 +21,7 @@ def main(runFlag: bool = True):
     print("all dfs loaded")
     for d in df:
         if(runFlag == False):
-            normalize_time(d)
+            d = normalizeDF(d)
             pd.to_pickle(d, "./data/dfs/" + d["Machine"].unique()[0] + " timeNormalized" + ".pkl.gz")
         make_binary_matrix(d)
                   
@@ -73,21 +74,7 @@ def make_binary_matrix(df: pd.DataFrame, interval: int = 500) -> pd.DataFrame:
     pd.to_pickle(bin_matrix, "./data/dfs/" + df["Machine"].unique()[0] + " binaryMatrix" + ".pkl.gz")
     print(bin_matrix.head(10))
             
-def normalize_time(df):
-    #if df["Time"].dtype == "float" convert to datetime:
-    if df["Time"].dtype == float:
-        df["Time"] = pd.to_datetime(df["Time"], unit="s")
-    if df['Time'].dtype != 'datetime64[ns]':
-        df['Time'] = pd.to_datetime(df['Time'], format='%H:%M:%S.%f')
-    print(df["Machine"].unique()[0] + " time normalized")
-    try:
-        df["Time"] = df["Time"].apply(lambda x: x - df["Time"].iloc[0])
-        df["Time"] = df["Time"].apply(lambda x: x / timedelta(milliseconds=1))
-    except TypeError as e:
-        print(e)
-        df["Time"] = df["Time"]
-    print(df["Time"].head(10))
-    
+
         
 if __name__ == "__main__":
     #print pwd
