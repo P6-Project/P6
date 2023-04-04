@@ -52,7 +52,7 @@ def predict(df: pd.DataFrame) -> str:
     for p in prediction:
         predict_protocol[p] = predict_protocol.get(p, 0) + 1
     highest_protocol = max(predict_protocol, key=predict_protocol.get)
-    return highest_protocol
+    return highest_protocol if score > 0.7 else "Unknown"
     
 def predict_from_file(filename: str) -> str:
     df = pd.read_pickle(os.path.join("./data/dfs", filename))
