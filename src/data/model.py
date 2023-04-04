@@ -47,14 +47,20 @@ def predict(df: pd.DataFrame) -> str:
     y = df.iloc[:,-1]
     score = svm.score(X, y)
     print("Accuracy: " + str(score))
-    return svm.predict(X)
+    prediction = svm.predict(X)
+    predict_protocol = {}
+    for p in prediction:
+        predict_protocol[p] = predict_protocol.get(p, 0) + 1
+    highest_protocol = max(predict_protocol, key=predict_protocol.get)
+    return highest_protocol
     
 def predict_from_file(filename: str) -> str:
     df = pd.read_pickle(os.path.join("./data/dfs", filename))
     return predict(df)
     
 if __name__ == "__main__":
-    train_model()
+    if not os.path.exists("./data/model.pkl"):
+        train_model()
     for files in os.listdir("./data/dfs"):
         if files.find("binaryMatrix") != -1:
             print("predicting: " + files + "")
