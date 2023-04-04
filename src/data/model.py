@@ -10,7 +10,10 @@ def train_model() -> SVC:
     for filename in os.listdir("./data/dfs"):
         if filename.find("binaryMatrix") != -1:
             try:
-                df = pd.read_pickle(os.path.join("./data/dfs", filename))
+                df : pd.DataFrame = pd.read_pickle(os.path.join("./data/dfs", filename))
+                if(df.iloc[:,-1] == "Unknown").any():
+                   print("Unknown label found, skipping")
+                   continue
                 train_df, test_df = train_test_split(df, test_size=0.3, random_state=42)
                 train_dfs.append(train_df)
                 test_dfs.append(test_df)
@@ -59,8 +62,8 @@ def predict_from_file(filename: str) -> str:
     return predict(df)
     
 if __name__ == "__main__":
-    if not os.path.exists("./data/model.pkl"):
-        train_model()
+    #if not os.path.exists("./data/model.pkl"):
+    train_model()
     for files in os.listdir("./data/dfs"):
         if files.find("binaryMatrix") != -1:
             print("predicting: " + files + "")

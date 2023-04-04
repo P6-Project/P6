@@ -85,6 +85,8 @@ def make_binary_matrix(df: pd.DataFrame, interval: int = 500) -> pd.DataFrame:
     bin_matrix : pd.DataFrame = pd.DataFrame()
     columns : list = [time for time in range(0, int(df["Time"].max()), interval)] 
     rows : list = [id for id in df["ID"].unique()]
+    for element in rows:
+        element = int(element, 16)
     bin_matrix = pd.DataFrame(columns=columns, index=rows)
     i = 0
     for id in df["ID"].unique():
@@ -111,6 +113,13 @@ def temp():
                 dfs.append(df)
     return dfs
 
+def convert_hex_to_int():
+    for files in os.listdir("./data/dfs/"):
+        if(files.find("binaryMatrix") != -1):
+            df = pd.read_pickle("./data/dfs/" + files)
+            df.index = df.index.map(lambda x: int(x, 16))
+            pd.to_pickle(df, "./data/dfs/" + files)
+
 def txt_to_csv(file : str, output : str):
     with open(file, 'r') as infile, open(output, 'w', newline='') as outfile:
         writer = csv.writer(outfile)
@@ -125,6 +134,7 @@ def txt_to_csv(file : str, output : str):
             writer.writerow([name, timestamp, identifier, dlc, data])
         
 if __name__ == "__main__":
-    #main(runFlag=False, source="./data/dfs/", delimiter=3, filename="normal_run")    
-    add_label_to_binary_matrix(source="./data/dfs/", machine="normal_run")
+    #main(runFlag=False, source="./data/dfs/", delimiter=3, filename="normal_run")
+    convert_hex_to_int()   
+    #add_label_to_binary_matrix(source="./data/dfs/", machine="normal_run")
     #temp()
