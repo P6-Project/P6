@@ -5,8 +5,8 @@ from datetime import timedelta
 import csv
 from processing import normalizeDF
 
-known_other : list = ["Houlotte lift", "Case stor", "Weidemann Ehofftrek 1160"]
-known_J1939 : list = ["CSS Electronics"]
+known_other : list = ["Houlotte lift", "Case stor", "Weidemann Ehofftrek 1160", "JCB 19C1E", "Weidemann Ehofftrek 1160"]
+known_J1939 : list = ["Case cx85d", "Weidemann 2070LP"]
 
 def load_pklgz(root : str, delimiter : int = 1, filename: str = "") -> list:
     dfs : list = []
@@ -41,7 +41,6 @@ def main(runFlag: bool = True, source : str = "./data/dfs", delimiter : int = 1,
         make_binary_matrix(d)
 
 def normalize_time(df):
-    #if df["Time"].dtype == "float" convert to datetime:
     if df["Time"].dtype == float:
         df["Time"] = pd.to_datetime(df["Time"], unit="s")
     if df['Time'].dtype != 'datetime64[ns]':
@@ -55,11 +54,10 @@ def normalize_time(df):
         df["Time"] = df["Time"]
     print(df["Time"].head(10))
 
-def add_label_to_binary_matrix(source : str, machine : str):
+def add_label_to_binary_matrix(source : str = "", machine : str = ""):
     labelDict : dict = {}
     for files in os.listdir(source):
         if(files.find(machine) != -1 and files.find("binaryMatrix") == -1):
-            print("found machine file: " + files + "")
             df : pd.DataFrame = pd.read_pickle(source + files)
             if 'Source' in df and df['Source'].eq("CSS Electronics").all():
                 a = df['Machine'].to_list()
@@ -67,16 +65,22 @@ def add_label_to_binary_matrix(source : str, machine : str):
             elif df["Machine"].isin(known_other).any():
                 a = df['Machine'].to_list()
                 labelDict[a[0]] = "Other"
+            elif df["Machine"].isin(known_J1939).any():
+                try:
+                    a = df['Machine'].to_list().remove("timeNormalized.pkl.gz")
+                except ValueError:
+                    a = df['Machine'].to_list()
+                labelDict[a[0]] = "J1939"
             else:
                 a = df['Machine'].to_list()
                 labelDict[a[0]] = "Unknown"
-        if(files.find("binaryMatrix") != -1 and files.find(machine) != -1):
+    for files in os.listdir(source):
+        if(files.find("timeNormalized") != -1 and files.find(machine) != -1):
             for keys in labelDict.keys():
-                print("key: " + keys + " files: " + files)
                 if files.find(keys) != -1:
+                    print("Labeling: " + files + " with label: " + labelDict[keys])
                     df = pd.read_pickle("./data/dfs/" + files)
                     df["Label"] = labelDict[keys]
-                    print(df.head(100))
                     pd.to_pickle(df, "./data/dfs/" + files)
     return df
 
@@ -134,7 +138,6 @@ def txt_to_csv(file : str, output : str):
             writer.writerow([name, timestamp, identifier, dlc, data])
         
 if __name__ == "__main__":
-    #main(runFlag=False, source="./data/dfs/", delimiter=3, filename="normal_run")
-    convert_hex_to_int()   
-    #add_label_to_binary_matrix(source="./data/dfs/", machine="normal_run")
+    #main(runFlag=False, source="./data/dfs/", delimiter=3, filename="normal_run")  
+    add_label_to_binary_matrix(source="./data/dfs/")
     #temp()

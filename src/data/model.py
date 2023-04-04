@@ -12,7 +12,7 @@ def train_model() -> SVC:
             try:
                 df : pd.DataFrame = pd.read_pickle(os.path.join("./data/dfs", filename))
                 if(df.iloc[:,-1] == "Unknown").any():
-                   print("Unknown label found, skipping")
+                   print("Unknown label found, skipping" + filename)
                    continue
                 train_df, test_df = train_test_split(df, test_size=0.3, random_state=42)
                 train_dfs.append(train_df)
