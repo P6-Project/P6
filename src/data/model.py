@@ -28,11 +28,35 @@ def train_model() -> SVC:
     print(y_test.head(100))
     svm = SVC(kernel='linear', C=1, random_state=42)
     svm.fit(X_train, y_train)
+    with open("./data/modelColumns.pkl", "wb") as f:
+        pickle.dump(train_data.columns, f)
     with open("./data/model.pkl", "wb") as f:
         pickle.dump(svm, f)
 
     score = svm.score(X_test, y_test)
     print("Accuracy: " + str(score))
+
+def predict(df: pd.DataFrame) -> str:
+    with open("./data/model.pkl", "rb") as f:
+        svm = pickle.load(f)
+    with open("./data/modelColumns.pkl", "rb") as f:
+        feature_names = pickle.load(f)
+    df = df.reindex(columns=feature_names, fill_value=0)
+    df = df.fillna(0)
+    X = df.iloc[:,:-1]
+    y = df.iloc[:,-1]
+    score = svm.score(X, y)
+    print("Accuracy: " + str(score))
+    return svm.predict(X)
+    
+def predict_from_file(filename: str) -> str:
+    df = pd.read_pickle(os.path.join("./data/dfs", filename))
+    return predict(df)
     
 if __name__ == "__main__":
     train_model()
+    for files in os.listdir("./data/dfs"):
+        if files.find("binaryMatrix") != -1:
+            print("predicting: " + files + "")
+            print(predict_from_file(files))
+    
