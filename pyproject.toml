@@ -3,12 +3,17 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "P6"
+name = "protocol_identifier"
 version = "0.0.1"
 requires-python = ">=3.10"
 readme = "README.md"
-dependencies = []
+dependencies = [
+    "matplotlib==3.7.1",
+    "pandas==1.5.3",
+    "pytz==2022.7",
+    "seaborn==0.12.2"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["tests"]
+exclude = ["tests", "scripts"]
