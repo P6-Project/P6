@@ -1,31 +1,17 @@
-# P6
+# P6: Canbus Protocol and SPN Identifier 
 
-## Converting data
+## Scripts
+
+## Development
 
 ```sh
-pwd
-path/to/this/repo
-python ./src/extractor.py PATH-TO-DATA-DIR SAMPLE-SIZE FILE.pkl
+pip install -r requirements.txt
+pip install -e .
 ```
 
-## Running tests
-
+### Tests
 ```sh
-python -m unittest discover -s ./test
-```
-
-## Creating graphs
-
-```sh
-python .\src\histogram.py picklefile outputpath
-```
-
-## Creating model data
-
-```sh
-python ./src/graphplot.py picklefile graphFolder outPickleFile
-```
-After this, you can run the model
-```sh
-python ./src/patternRecognizer.py picklefile
+python -m pytest
+# or
+pytest
 ```
