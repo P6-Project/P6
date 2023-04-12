@@ -3,6 +3,10 @@ import os
 import csv
 import numpy as np
 
+
+known_other : list = ["Houlotte lift", "Case stor", "Weidemann Ehofftrek 1160", "JCB 19C1E", "Weidemann Ehofftrek 1160"]
+known_J1939 : list = ["Case cx85d", "Weidemann 2070LP"]
+
 def make_binary_matrix(df: pd.DataFrame, interval: int = 500) -> pd.DataFrame:
     # Create a new column with time intervals 
     bin_matrix : pd.DataFrame = pd.DataFrame()
