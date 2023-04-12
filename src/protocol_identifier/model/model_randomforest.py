@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from protocol_identifier.data.pkl_reader import load_pickled_dir
 
-def random_forrest_model_creator(source : str = "./data/dfs"):
+def random_forrest_model_creator(source : str = "./data/dfs") -> str:
     if not os.path.exists("./data/models"):
         os.makedirs("./data/models")
     dfs = load_pickled_dir(source)
@@ -25,7 +25,7 @@ def random_forrest_model_creator(source : str = "./data/dfs"):
     predictions = rf.predict(X_test)
     
     accuracy = (predictions == y_test).mean()
-    print("Accuracy: " + str(accuracy))
+    return (f"{accuracy:.2%} accuracy on test set" + "model saved in ./data/models/randomForrest.pkl")
     
 
 def save_model(model, filename):
@@ -34,6 +34,16 @@ def save_model(model, filename):
 
 def predict(model, data):
     return model.predict(data)
+
+def main(train : bool = False, predict : bool = False, source_train: str = "./data/dfs", predict_df : pd.DataFrame = None):
+    if train:
+        print(random_forrest_model_creator(source_train))
+    if predict:
+        if predict_df is None:
+            raise ValueError("Predict dataframe not provided")
+        print(predict(pd.read_pickle("./data/models/randomForrest.pkl"), predict_df['ID'].apply(lambda x: int(x, 16)).to_frame()))
+        
+
 
 if __name__ == "__main__":
     #random_forrest_model_creator()
