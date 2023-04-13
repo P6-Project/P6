@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from protocol_identifier.processing import norm_time, normalize_df, normalize_dfs
-from .helpers import FILES
+from test.helpers import FILES
 
 def test_normalize_dfs():
     dfs = [
