@@ -1,26 +1,30 @@
 import pandas as pd
-
-
-def extract_data_range(range):
-    try:
-        data = [s.strip() for s in range.split(" to ")]
-    except:
-        print("No data range for this SPN")
-    
-    return []
-
-def check_data(readable_data, range):
-    data_range = extract_data_range(range)
-
-    if readable_data >= data_range[0] or readable_data <= data_range[1]:
-        return 1
-    return 0
+from .data_splitter import split_data
+from .data_converter import convert_data
+from .data_checker import check_data_point
 
 
 def find_usable_spns(machineDf: pd.DataFrame, spns: pd.DataFrame):
+    usable_data = pd.DataFrame(columns=["PGN", "SPN"])
     for index, row in machineDf.iterrows():
-        usedSpns = spns.loc[spns["PGN"] == row["PGN"]]
+        used_spns = spns.loc[spns["PGN"] == row["PGN"]]
 
-        readable_data = 1011 #Lasse insert data
+        print(used_spns)
+        print(row)
+        if used_spns.empty:
+            continue
 
-        check_data(readable_data, row["Data Range"])
+        for spn_index, spn_row in used_spns.iterrows():
+            print("-------------------------------------------------------")
+            print("SPN VALUE: ", spn_row["SPN"])
+            splitted_data = split_data(row["BE Bit Val"], spn_row["SPN Position in PGN"], spn_row["SPN Length"])
+            print("SPLITTED DATA:", splitted_data)
+            converted_data = convert_data(splitted_data, spn_row["Resolution"], spn_row["Offset"], spn_row["Units"])
+            print("CONVERTED DATA:", converted_data, spn_row["Units"])
+            if check_data_point(converted_data, spn_row["Data Range"], spn_row["Units"]):
+                usable_data.loc[len(usable_data.index)] = [spn_row["PGN"], spn_row["SPN"]]
+
+
+    usable_data.drop_duplicates(subset=["SPN"], inplace=True)
+    usable_data.reset_index(inplace=True)
+    return usable_data

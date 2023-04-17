@@ -1,4 +1,3 @@
-import argparse
 import pandas as pd
 
 def find_used_spns(excelpath: str, machinedatapath: str):
@@ -17,7 +16,7 @@ def find_used_spns(excelpath: str, machinedatapath: str):
 def read_pgn_file(path: str):
     df = pd.read_excel(path, skiprows=3, sheet_name="SPNs & PGNs",
                        usecols=["PGN", "Parameter Group Label", "PGN Data Length", "SPN Position in PGN", "SPN",
-                                "SPN Name", "SPN Length", "Resolution", "Offset", "Data Range"]).dropna(axis=0,
+                                "SPN Name", "SPN Length", "Resolution", "Offset", "Data Range", "Units"]).dropna(axis=0,
                                                                                                         subset=["PGN",
                                                                                                                 "SPN"])
     df["PGN"] = df["PGN"].apply(int)
