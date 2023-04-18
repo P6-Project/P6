@@ -9,17 +9,10 @@ def extract_resolution(resolution):
         return 0
 
     x = 1
-
-    print(extracted_resolution)
-
     if any(char.isdigit() for char in extracted_resolution[1]):
-        x = int(extracted_resolution[1].strip().split(" ")[0])
+        x = int(extracted_resolution[1].strip().split(" ")[0]) # if the resolution says eg. 4 states / 2 bits
 
-    print("x: ", x)
-
-    print(extracted_resolution)
-
-    return convert_to_float(extracted_resolution[0].split(" ")[0])/x
+    return convert_to_float(extracted_resolution[0].split(" ")[0]) / x
 
 
 def extract_offset(offset):

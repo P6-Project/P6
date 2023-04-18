@@ -1,7 +1,7 @@
 import pandas as pd
-from .data_splitter import split_data
-from .data_converter import convert_data
-from .data_checker import check_data_point
+from protocol_identifier.verification.data_splitter import split_data
+from protocol_identifier.verification.data_converter import convert_data
+from protocol_identifier.verification.data_checker import check_data_point
 
 
 def find_usable_spns(machineDf: pd.DataFrame, spns: pd.DataFrame):
@@ -26,5 +26,5 @@ def find_usable_spns(machineDf: pd.DataFrame, spns: pd.DataFrame):
 
 
     usable_data.drop_duplicates(subset=["SPN"], inplace=True)
-    usable_data.reset_index(inplace=True)
+    usable_data.reset_index(inplace=True, drop=True)
     return usable_data

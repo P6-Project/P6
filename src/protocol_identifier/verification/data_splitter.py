@@ -34,7 +34,7 @@ def split_data(bitValue: int, range: str, length: str):
         end = start + int(data_length)
 
         return bitValue[start:end]
-    print("Length: ", data_length)
+
     start = (int(sections[0]) * 8 - 8)
     end = start + int(data_length)
     return bitValue[start:end]
