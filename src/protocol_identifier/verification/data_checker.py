@@ -1,8 +1,6 @@
-import pandas as pd
-
 def get_data_range(data_range: str, units: str):
     try:
-        if data_range.__contains__("to"):
+        if "to" in data_range:
             if units or units == "0":
                 data_range = data_range.split(units)[0].strip()
             low, high = data_range.split(" to ")

@@ -1,9 +1,9 @@
 
 def extract_resolution(resolution):
     extracted_resolution = []
-    if resolution.__contains__("per"):
+    if "per" in resolution:
         extracted_resolution = resolution.split("per")
-    elif resolution.__contains__("/"):
+    elif "/" in resolution:
         extracted_resolution = resolution.split("/")
     else:
         return 0
