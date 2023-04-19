@@ -105,9 +105,9 @@ def lookup_spns(machine_df: pd.DataFrame, j1939_sheet: pd.DataFrame):
         if usable_spns.empty:
             machine_df.drop(index, axis='rows', inplace=True)
             continue
-        for index, row in usable_spns.iterrows():
-            if not check_spn(row):
-                usable_spns.drop(index, axis=0)
+    for index, row in usable_spns.iterrows():
+        if not check_spn(row):
+            usable_spns.drop(index, axis=0)
 
     machine_df.dropna(how='all', inplace=True, axis='rows')
     machine_df.reset_index(drop=True, inplace=True)
