@@ -14,10 +14,16 @@ def load_pickled_dir(path, delimiters=[]):
     return dfs
 
 
-def random_forrest_model_creator():
-    if not os.path.exists("./data/models"):
-        os.makedirs("./data/models")
-    dfs : list[pd.DataFrame] = load_pickled_dir("../../../data/dfs", delimiters=["timeNormalized", "rand_data_noise"])
+def random_forrest_model_creator(
+        output_path="./data/models", 
+        delimiters=["timeNormalized", "rand_data_noise"], 
+        pickle_path_dfs="./data/dfs",
+        train_test_split_params={"test_size": 0.3, "random_state": 42},
+        rf_params={"n_estimators": 100, "random_state": 42}
+        ):
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    dfs : list[pd.DataFrame] = load_pickled_dir(pickle_path_dfs, delimiters=delimiters)
     dfs_pruned = []
     for df in dfs:
         print(df)
@@ -35,7 +41,11 @@ def random_forrest_model_creator():
     y = combined_df['Label']
     X = X.apply(lambda x: int(x, 16))
     X = X.to_frame()
-    X_train, X_test , y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test , y_train, y_test = train_test_split(
+        X, y, 
+        test_size=train_test_split_params["test_size"] ,
+        random_state=train_test_split_params["random_state"]
+        )
     rf = RandomForestClassifier(n_estimators=100, random_state=42)
     rf.fit(X_train, y_train)
     save_model(rf, "randomForrest")
@@ -43,14 +53,28 @@ def random_forrest_model_creator():
     
     accuracy = (predictions == y_test).mean()
     print("Accuracy: " + str(accuracy))
-    
+
 
 def save_model(model, filename):
     pd.to_pickle(model, "./data/models/" + filename + ".pkl")
 
 
-def predict(model, data):
-    return model.predict(data)
+def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> str:
+    res_dict = {}
+    try:
+        model = pd.read_pickle(model)
+    except FileNotFoundError:
+        return "No model found, plz train benis"
+    result = model.predict(data)
+    for e in result:
+        res_dict[e] = res_dict.get(e, 0) + 1
+    for key in res_dict:
+        res_dict[key] = res_dict[key] / len(result)
+        if res_dict[key] > 0.5:
+            return key
+    return "Unknown"
+
+
 
 if __name__ == "__main__":
     #random_forrest_model_creator()

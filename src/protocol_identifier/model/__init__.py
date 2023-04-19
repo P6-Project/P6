@@ -1,3 +1,3 @@
-from .model_randomforest import main
+from .modelRandomForrest import predictRF, random_forrest_model_creator
 
-__all__ = ["main"]
+__all__ = ["predictRF", "random_forrest_model_creator"]

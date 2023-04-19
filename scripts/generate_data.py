@@ -28,4 +28,3 @@ if __name__ == "__main__":
         df.to_pickle("../data/dfs/rand_data_noise.pkl.gz")
     df = pd.read_pickle("../data/dfs/rand_data_noise.pkl.gz")
     print(df.head(100000), "done")
-
