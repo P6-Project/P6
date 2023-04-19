@@ -28,10 +28,6 @@ def convert_data(data: str, resolution: str, offset: str, units: str):
     if offset.strip() != "0":
         converted_offset = extract_offset(offset)
 
-    print("Data: ", data)
-    print("Converted resolution:", converted_resolution)
-    print("Converted offset:", converted_offset)
-
     physical_value = int(data, 2) * converted_resolution + converted_offset
 
     return physical_value
