@@ -51,7 +51,7 @@ def from_id_to_pgn_dec(id: str) -> object:
         return 'Not Valid'
 
 
-def binary_search(arr, low, high, x):
+def binary_search(arr: list, low: int, high: int, x: str):
     # Check base case
     if high >= low:
 

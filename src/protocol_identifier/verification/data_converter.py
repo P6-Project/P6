@@ -1,5 +1,5 @@
 
-def extract_resolution(resolution):
+def extract_resolution(resolution: str):
     extracted_resolution = []
     if "per" in resolution:
         extracted_resolution = resolution.split("per")
@@ -15,7 +15,7 @@ def extract_resolution(resolution):
     return convert_to_float(extracted_resolution[0].split(" ")[0]) / x
 
 
-def extract_offset(offset):
+def extract_offset(offset: str):
     offset_number = offset.split(" ")[0]
     return float(offset_number.replace(",", ""))
 
@@ -32,7 +32,7 @@ def convert_data(data: str, resolution: str, offset: str, units: str):
 
     return physical_value
 
-def convert_to_float(frac_str):
+def convert_to_float(frac_str: str):
     try:
         return float(frac_str)
     except ValueError:

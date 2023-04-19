@@ -31,7 +31,7 @@ def split_data(bitValue: int, range: str, length: str):
     end = start + int(data_length)
     return bitValue[start:end]
 
-def byte_and_bit_from_num(num):
+def byte_and_bit_from_num(num: str):
     parts = num.split(".")
     byte = parts[0]
     bit = parts[1] if len(parts) > 1 else 1
