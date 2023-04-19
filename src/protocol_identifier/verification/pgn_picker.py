@@ -77,17 +77,17 @@ def binary_search(arr, low, high, x):
 def match_pgns(machine_df: pd.DataFrame, j1939: pd.DataFrame):
     new_df = pd.DataFrame(columns=['CAN ID', 'PGN', 'Data'])
     pgn_list = j1939["PGN"].to_numpy()
-    for machine_index, machine_row in machine_df.iterrows():
-        machine_id_in_pgn = from_id_to_pgn_dec(machine_row["ID"])
-        if machine_id_in_pgn == 'Not Valid':
+    for index, data_row in machine_df.iterrows():
+        pgn = from_id_to_pgn_dec(data_row["ID"])
+        if pgn == 'Not Valid':
             continue
-        
-        result = binary_search(pgn_list, 0, len(pgn_list) - 1, machine_id_in_pgn)
+        result = binary_search(pgn_list, 0, len(pgn_list) - 1, pgn)
         if result != -1:
-            new_df.loc[len(new_df)] = machine_row
-            new_df["PGN"].loc[len(new_df)] = machine_id_in_pgn
+            new_df.loc[len(new_df)] = data_row
+            new_df["PGN"].loc[len(new_df)] = pgn
             new_df.index = new_df.index + 1
     return new_df
+
 
 def check_spn(spn: pd.Series):
     if int(spn["PGN Data Length"]) > 8:  # length is too big for this project
@@ -99,11 +99,11 @@ def check_spn(spn: pd.Series):
 def lookup_spns(machine_df: pd.DataFrame, j1939_sheet: pd.DataFrame):
     usable_spns = pd.DataFrame()
     machine_df.reset_index(drop=True, inplace=True)
-    for machine_index, machine_row in machine_df.iterrows():
-        df: pd.DataFrame = j1939_sheet.loc[j1939_sheet["PGN"] == machine_row[1]]
+    for index, data_row in machine_df.iterrows():
+        df: pd.DataFrame = j1939_sheet.loc[j1939_sheet["PGN"] == data_row[1]]
         usable_spns = pd.concat([usable_spns, df[~df["PGN Data Length"].isna()]]).drop_duplicates().reset_index(drop=True)
         if usable_spns.empty:
-            machine_df.drop(machine_index, axis='rows', inplace=True)
+            machine_df.drop(index, axis='rows', inplace=True)
             continue
         for index, row in usable_spns.iterrows():
             if not check_spn(row):
