@@ -89,11 +89,15 @@ def match_pgns(machine_df: pd.DataFrame, j1939: pd.DataFrame):
             new_df.index = new_df.index + 1
     return new_df
 
+
 def check_spn(spn: pd.Series):
-    if int(spn["PGN Data Length"]) > 8:  # length is too big for this project
-        return 0
-    else:
-        return 1
+    try:
+        if int(spn["PGN Data Length"]) > 8:  # length is too big for this project
+            return False
+        else:
+            return True
+    except ValueError:
+        return True
 
 
 def lookup_spns(machineDf: pd.DataFrame, j1939Sheet: pd.DataFrame):
