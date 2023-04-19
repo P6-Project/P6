@@ -4,9 +4,9 @@ from protocol_identifier.verification.data_converter import convert_data
 from protocol_identifier.verification.data_checker import check_data_point
 
 
-def find_usable_spns(machineDf: pd.DataFrame, spns: pd.DataFrame):
+def find_usable_spns(machine_df: pd.DataFrame, spns: pd.DataFrame):
     usable_data = pd.DataFrame(columns=["PGN", "SPN"])
-    for index, row in machineDf.iterrows():
+    for index, row in machine_df.iterrows():
         used_spns = spns.loc[spns["PGN"] == row["PGN"]]
 
         if used_spns.empty:

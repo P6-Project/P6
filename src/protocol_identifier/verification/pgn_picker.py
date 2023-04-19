@@ -3,12 +3,11 @@ import pandas as pd
 def find_used_spns(j1939_path: str, machine_data: pd.DataFrame):
 
     # machine_data er på formen: ID | Data
-
     j1939_df = read_j1939_file(j1939_path)
 
-    usableMachineData = match_pgns(machine_data, j1939_df)
+    usable_machine_data = match_pgns(machine_data, j1939_df)
 
-    (machineData, usedSpns) = lookup_spns(usableMachineData, j1939_df)
+    (machineData, usedSpns) = lookup_spns(usable_machine_data, j1939_df)
 
     return prune_data(machineData), usedSpns
 
@@ -96,23 +95,23 @@ def check_spn(spn: pd.Series):
         return 1
 
 
-def lookup_spns(machineDf: pd.DataFrame, j1939Sheet: pd.DataFrame):
-    usableSpns = pd.DataFrame()
-    machineDf.reset_index(drop=True, inplace=True)
-    for machineindex, machinerow in machineDf.iterrows():
-        df: pd.DataFrame = j1939Sheet.loc[j1939Sheet["PGN"] == machinerow[1]]
-        usableSpns = pd.concat([usableSpns, df[~df["PGN Data Length"].isna()]]).drop_duplicates().reset_index(drop=True)
-        if usableSpns.empty:
-            machineDf.drop(machineindex, axis='rows', inplace=True)
+def lookup_spns(machine_df: pd.DataFrame, j1939_sheet: pd.DataFrame):
+    usable_spns = pd.DataFrame()
+    machine_df.reset_index(drop=True, inplace=True)
+    for machine_index, machine_row in machine_df.iterrows():
+        df: pd.DataFrame = j1939_sheet.loc[j1939_sheet["PGN"] == machine_row[1]]
+        usable_spns = pd.concat([usable_spns, df[~df["PGN Data Length"].isna()]]).drop_duplicates().reset_index(drop=True)
+        if usable_spns.empty:
+            machine_df.drop(machine_index, axis='rows', inplace=True)
             continue
-        for index, row in usableSpns.iterrows():
+        for index, row in usable_spns.iterrows():
             if not check_spn(row):
-                usableSpns.drop(index, axis=0)
+                usable_spns.drop(index, axis=0)
 
-    machineDf.dropna(how='all', inplace=True, axis='rows')
-    machineDf.reset_index(drop=True, inplace=True)
+    machine_df.dropna(how='all', inplace=True, axis='rows')
+    machine_df.reset_index(drop=True, inplace=True)
 
-    return (machineDf, usableSpns)
+    return (machine_df, usable_spns)
 
 
 def prune_data(df: pd.DataFrame):
