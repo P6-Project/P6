@@ -116,7 +116,7 @@ def lookup_spns(machineDf: pd.DataFrame, j1939Sheet: pd.DataFrame):
 
 
 def prune_data(df: pd.DataFrame):
-    bit_len = 8 * 8
+    bit_len = 64
 
     for index, row in df.iterrows():
         ba = bytearray.fromhex(str(row["Data"]))
