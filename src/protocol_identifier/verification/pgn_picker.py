@@ -76,11 +76,12 @@ def binary_search(arr, low, high, x):
 
 def match_pgns(machine_df: pd.DataFrame, j1939: pd.DataFrame):
     new_df = pd.DataFrame(columns=['CAN ID', 'PGN', 'Data'])
+    pgn_list = j1939["PGN"].to_numpy()
     for machine_index, machine_row in machine_df.iterrows():
         machine_id_in_pgn = from_id_to_pgn_dec(machine_row["ID"])
         if machine_id_in_pgn == 'Not Valid':
             continue
-        pgn_list = j1939["PGN"].to_numpy()
+        
         result = binary_search(pgn_list, 0, len(pgn_list) - 1, machine_id_in_pgn)
         if result != -1:
             new_df.loc[len(new_df)] = machine_row
