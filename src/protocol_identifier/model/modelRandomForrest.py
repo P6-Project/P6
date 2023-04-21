@@ -59,7 +59,8 @@ def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> s
         model = pd.read_pickle(model)
     except FileNotFoundError:
         return "No model found, plz train benis"
-    result = model.predict(data)
+    predict_data = data['ID'].apply(lambda x: int(x, 16)).to_frame()
+    result = model.predict(predict_data)
     for e in result:
         res_dict[e] = res_dict.get(e, 0) + 1
     for key in res_dict:
