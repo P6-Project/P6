@@ -13,7 +13,11 @@ def find_usable_spns(machineDf: pd.DataFrame, spns: pd.DataFrame):
             continue
 
         for spn_index, spn_row in used_spns.iterrows():
-            splitted_data = split_data(row["BE Bit Val"], spn_row["SPN Position in PGN"], spn_row["SPN Length"])
+            # Some spn length values does not follow the format data length and type ~50 instances.
+            try:
+                splitted_data = split_data(row["BE Bit Val"], spn_row["SPN Position in PGN"], spn_row["SPN Length"])
+            except ValueError:
+                continue
             converted_data = convert_data(splitted_data, spn_row["Resolution"], spn_row["Offset"], spn_row["Units"])
             if check_data_point(converted_data, spn_row["Data Range"], spn_row["Units"]):
                 usable_data.loc[len(usable_data.index)] = [spn_row["PGN"], spn_row["SPN"]]
