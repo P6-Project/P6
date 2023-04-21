@@ -2,7 +2,7 @@ from random import randint, choices
 import pandas as pd
 import os
 
-def create_data(num_lines : int) -> pd.DataFrame:
+def create_data(num_lines : int, source : str) -> pd.DataFrame:
     temp: dict = {
         "ID": [],
         "Label": [],
@@ -16,15 +16,14 @@ def create_data(num_lines : int) -> pd.DataFrame:
         temp["Label"].append("Other")
     return pd.DataFrame(temp)
 
-if __name__ == "__main__":
-    if os.path.exists("../data/dfs/rand_data_noise.pkl.gz"):
-        num_lines = 25000000
-        # for files in os.listdir("../data/dfs"):
-        #     if files.find("timeNormalized") != -1:
-        #         df : pd.DataFrame =  pd.read_pickle(os.path.join("../data/dfs", files))
-        #         num_lines += len(df)
-        #         print(num_lines)
-        df = create_data(num_lines)
-        df.to_pickle("../data/dfs/rand_data_noise.pkl.gz")
+def main(source : str, num_lines : int):
+    if not os.path.exists(source):
+        os.makedirs(source)
+    num_lines = 25000000
+    df = create_data(num_lines, source)
+    df.to_pickle("../data/dfs/rand_data_noise.pkl.gz")
     df = pd.read_pickle("../data/dfs/rand_data_noise.pkl.gz")
     print(df.head(100000), "done")
+
+if __name__ == "__main__":
+    main("../data/dfs/", 25000000)
