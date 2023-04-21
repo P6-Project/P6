@@ -50,7 +50,7 @@ def random_forrest_model_creator(
 
 
 def save_model(model : str, dest : str, filename : str):
-    pd.to_pickle(model, dest + "/"  + filename + ".pkl")
+    pd.to_pickle(model, os.path.join(dest, filename) +".pkl")
 
 
 def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> str:
@@ -67,8 +67,3 @@ def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> s
         if res_dict[key] > 0.5:
             return key
     return "Unknown"
-
-
-
-    
-    
