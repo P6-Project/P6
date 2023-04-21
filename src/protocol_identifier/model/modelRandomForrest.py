@@ -56,10 +56,10 @@ def save_model(model : str, dest : str, filename : str):
 def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> str:
     res_dict = {}
     try:
-        model = pd.read_pickle(model)
+        model: RandomForestClassifier = pd.read_pickle(model)
     except FileNotFoundError:
         return "No model found, plz train benis"
-    result = model.predict(data)
+    result = model.predict(data["ID"].apply(lambda x: int(x, 16)).to_frame())
     for e in result:
         res_dict[e] = res_dict.get(e, 0) + 1
     for key in res_dict:

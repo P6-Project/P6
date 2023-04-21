@@ -1,8 +1,7 @@
 import pandas as pd
-from protocol_identifier.verification.data_splitter import split_data
-from protocol_identifier.verification.data_converter import convert_data
-from protocol_identifier.verification.data_checker import check_data_point
-
+from .data_checker import check_data_point
+from .data_converter import convert_data
+from .data_splitter import split_data
 
 def find_usable_spns(machine_df: pd.DataFrame, spns: pd.DataFrame):
     usable_data = pd.DataFrame(columns=["PGN", "SPN"])
