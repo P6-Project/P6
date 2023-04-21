@@ -4,15 +4,15 @@ from protocol_identifier.data import load_pickled_dir
 import os
 import pandas as pd
 
-def load_pickled_dir(path, delimiters=[]):
-    dfs = []
-    for files in os.listdir(path):
-        for delimiter in delimiters:
-            if files.find(delimiter) != -1:
-                df : pd.DataFrame = pd.read_pickle(os.path.join(path, files))
-                df.Name = files
-                dfs.append(df)
-    return dfs
+# def load_pickled_dir(path, delimiters=[]):
+#     dfs = []
+#     for files in os.listdir(path):
+#         for delimiter in delimiters:
+#             if files.find(delimiter) != -1:
+#                 df : pd.DataFrame = pd.read_pickle(os.path.join(path, files))
+#                 df.Name = files
+#                 dfs.append(df)
+#     return dfs
 
 
 def random_forrest_model_creator(
@@ -24,7 +24,8 @@ def random_forrest_model_creator(
         ):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    dfs : list[pd.DataFrame] = load_pickled_dir(pickle_path_dfs, delimiters=delimiters)
+    dfs : dict = load_pickled_dir(pickle_path_dfs, delimiters=delimiters)
+    dfs = dfs.values()
     dfs_pruned = []
     for df in dfs:
         print(df)
@@ -52,15 +53,15 @@ def random_forrest_model_creator(
         random_state=rf_params["random_state"]
         )
     rf.fit(X_train, y_train)
-    save_model(rf, "randomForrest")
+    save_model(rf, output_path ,"randomForrest")
     predictions = rf.predict(X_test)
     
     accuracy = (predictions == y_test).mean()
     print("Accuracy: " + str(accuracy))
 
 
-def save_model(model, filename):
-    pd.to_pickle(model, "./data/models/" + filename + ".pkl")
+def save_model(model : str, dest : str, filename : str):
+    pd.to_pickle(model, dest + "/"  + filename + ".pkl")
 
 
 def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> str:
