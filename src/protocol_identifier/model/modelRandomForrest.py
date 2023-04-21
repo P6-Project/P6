@@ -1,5 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from protocol_identifier.data import load_pickled_dir
 import os
 import pandas as pd
 
@@ -8,7 +9,7 @@ def load_pickled_dir(path, delimiters=[]):
     for files in os.listdir(path):
         for delimiter in delimiters:
             if files.find(delimiter) != -1:
-                df = pd.read_pickle(os.path.join(path, files))
+                df : pd.DataFrame = pd.read_pickle(os.path.join(path, files))
                 df.Name = files
                 dfs.append(df)
     return dfs
@@ -46,7 +47,10 @@ def random_forrest_model_creator(
         test_size=train_test_split_params["test_size"] ,
         random_state=train_test_split_params["random_state"]
         )
-    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf = RandomForestClassifier(
+        n_estimators=rf_params["n_estimators"], 
+        random_state=rf_params["random_state"]
+        )
     rf.fit(X_train, y_train)
     save_model(rf, "randomForrest")
     predictions = rf.predict(X_test)
@@ -76,16 +80,5 @@ def predictRF(data: pd.DataFrame, model ="./data/models/randomForrest.pkl") -> s
 
 
 
-if __name__ == "__main__":
-    #random_forrest_model_creator()
-    for files in os.listdir("../../../data/dfs"):
-        if files.find("timeNormalized") != -1:
-            resDict = {}
-            print(files)
-            df : pd.DataFrame = pd.read_pickle(os.path.join("../../../data/dfs", files))
-            res = predict(pd.read_pickle("./data/models/randomForrest.pkl"), df['ID'].apply(lambda x: int(x, 16)).to_frame())
-            for e in res:
-                resDict[e] = resDict.get(e, 0) + 1    
-            print(resDict)
     
     
