@@ -3,12 +3,11 @@ import pandas as pd
 def find_used_spns(j1939_path: str, machine_data: pd.DataFrame):
 
     # machine_data er på formen: ID | Data
-
     j1939_df = read_j1939_file(j1939_path)
 
-    usableMachineData = match_pgns(machine_data, j1939_df)
+    usable_machine_data = match_pgns(machine_data, j1939_df)
 
-    (machineData, usedSpns) = lookup_spns(usableMachineData, j1939_df)
+    (machineData, usedSpns) = lookup_spns(usable_machine_data, j1939_df)
 
     return prune_data(machineData), usedSpns
 
@@ -77,15 +76,15 @@ def binary_search(arr, low, high, x):
 
 def match_pgns(machine_df: pd.DataFrame, j1939: pd.DataFrame):
     new_df = pd.DataFrame(columns=['CAN ID', 'PGN', 'Data'])
-    for machine_index, machine_row in machine_df.iterrows():
-        machine_id_in_pgn = from_id_to_pgn_dec(machine_row["ID"])
-        if machine_id_in_pgn == 'Not Valid':
+    pgn_list = j1939["PGN"].to_numpy()
+    for index, data_row in machine_df.iterrows():
+        pgn = from_id_to_pgn_dec(data_row["ID"])
+        if pgn == 'Not Valid':
             continue
-        pgn_list = j1939["PGN"].to_numpy()
-        result = binary_search(pgn_list, 0, len(pgn_list) - 1, machine_id_in_pgn)
+        result = binary_search(pgn_list, 0, len(pgn_list) - 1, pgn)
         if result != -1:
-            new_df.loc[len(new_df)] = machine_row
-            new_df["PGN"].loc[len(new_df)] = machine_id_in_pgn
+            new_df.loc[len(new_df)] = data_row
+            new_df["PGN"].loc[len(new_df)] = pgn
             new_df.index = new_df.index + 1
     return new_df
 
@@ -100,23 +99,23 @@ def check_spn(spn: pd.Series):
         return True
 
 
-def lookup_spns(machineDf: pd.DataFrame, j1939Sheet: pd.DataFrame):
-    usableSpns = pd.DataFrame()
-    machineDf.reset_index(drop=True, inplace=True)
-    for machineindex, machinerow in machineDf.iterrows():
-        df: pd.DataFrame = j1939Sheet.loc[j1939Sheet["PGN"] == machinerow[1]]
-        usableSpns = pd.concat([usableSpns, df[~df["PGN Data Length"].isna()]]).drop_duplicates().reset_index(drop=True)
-        if usableSpns.empty:
-            machineDf.drop(machineindex, axis='rows', inplace=True)
+def lookup_spns(machine_df: pd.DataFrame, j1939_sheet: pd.DataFrame):
+    usable_spns = pd.DataFrame()
+    machine_df.reset_index(drop=True, inplace=True)
+    for index, data_row in machine_df.iterrows():
+        df: pd.DataFrame = j1939_sheet.loc[j1939_sheet["PGN"] == data_row[1]]
+        usable_spns = pd.concat([usable_spns, df[~df["PGN Data Length"].isna()]]).drop_duplicates().reset_index(drop=True)
+        if usable_spns.empty:
+            machine_df.drop(index, axis='rows', inplace=True)
             continue
-        for index, row in usableSpns.iterrows():
-            if not check_spn(row):
-                usableSpns.drop(index, axis=0)
+    for index, row in usable_spns.iterrows():
+        if not check_spn(row):
+            usable_spns.drop(index, axis=0)
 
-    machineDf.dropna(how='all', inplace=True, axis='rows')
-    machineDf.reset_index(drop=True, inplace=True)
+    machine_df.dropna(how='all', inplace=True, axis='rows')
+    machine_df.reset_index(drop=True, inplace=True)
 
-    return (machineDf, usableSpns)
+    return (machine_df, usable_spns)
 
 
 def prune_data(df: pd.DataFrame):

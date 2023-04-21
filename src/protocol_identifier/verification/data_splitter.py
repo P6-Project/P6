@@ -1,7 +1,7 @@
-def split_data(bitValue: int, range: str, length: str):
+def split_data(bit_value: int, range: str, length: str):
     sections = [s.strip() for s in range.split("-")]
-    (data_length, Type) = length.split(" ")
-    if Type == "byte":
+    (data_length, type) = length.split(" ")
+    if type == "byte":
         data_length *= 8
     if len(sections) > 1:
         if "." in sections[0]:
@@ -16,7 +16,7 @@ def split_data(bitValue: int, range: str, length: str):
         else:
             end = (int(sections[1]) * 8)
 
-        return bitValue[start:end]
+        return bit_value[start:end]
 
     section = sections[0]
     if "." in section:
@@ -25,11 +25,11 @@ def split_data(bitValue: int, range: str, length: str):
 
         end = start + int(data_length)
 
-        return bitValue[start:end]
+        return bit_value[start:end]
 
     start = (int(sections[0]) * 8 - 8)
     end = start + int(data_length)
-    return bitValue[start:end]
+    return bit_value[start:end]
 
 def byte_and_bit_from_num(num):
     parts = num.split(".")

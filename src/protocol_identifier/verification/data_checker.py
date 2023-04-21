@@ -1,7 +1,7 @@
 def get_data_range(data_range: str, units: str):
     try:
         if "to" in data_range:
-            if units or units == "0":
+            if units == "0":
                 data_range = data_range.split(units)[0].strip()
             low, high = data_range.split(" to ")
             high = high.split(" ")[0]
