@@ -4,17 +4,6 @@ from protocol_identifier.data import load_pickled_dir
 import os
 import pandas as pd
 
-# def load_pickled_dir(path, delimiters=[]):
-#     dfs = []
-#     for files in os.listdir(path):
-#         for delimiter in delimiters:
-#             if files.find(delimiter) != -1:
-#                 df : pd.DataFrame = pd.read_pickle(os.path.join(path, files))
-#                 df.Name = files
-#                 dfs.append(df)
-#     return dfs
-
-
 def random_forrest_model_creator(
         output_path="./data/models", 
         delimiters=["timeNormalized", "rand_data_noise"], 
