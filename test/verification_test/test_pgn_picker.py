@@ -1,5 +1,4 @@
 import pandas as pd
-import pandas.testing as pdt
 import pytest
 
 from protocol_identifier.verification.pgn_picker import check_spn, from_id_to_pgn_dec
@@ -20,6 +19,3 @@ def test_check_spn_return_false():
 
 def test_check_spn_return_true_with_string_input():
     assert check_spn(pd.Series(["5"], index = ["PGN Data Length"])) == True
-
-
-
