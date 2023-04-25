@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from protocol_identifier.verification.data_converter import convert_to_float, extract_resolution, extract_offset
+from protocol_identifier.verification.data_converter import convert_to_float, extract_resolution, extract_offset, convert_data
 
 def test_convert_to_float_1024():
     assert convert_to_float("1/1024") == 0.0009765625
@@ -45,5 +45,13 @@ def test_extract_offset_with_unit():
     assert extract_offset("-32127 rpm") == -32127
 
 
+def test_convert_data_ASCII_unit():
+    assert convert_data('0110', "1 / bit", "0", "ASCII") == 6
+
+def test_convert_data_rpm_data():
+    assert convert_data('1001101101000', "0.125 RPM per bit", "0", "rpm") == 621
+
+def test_convert_data_voltage_current_data():
+    assert convert_data('111111001010100', "0.05 A/bit", "-1600 A", "A") == 17
 
 
