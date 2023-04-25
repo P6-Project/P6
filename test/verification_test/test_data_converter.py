@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from protocol_identifier.verification.data_converter import convert_to_float, extract_resolution
+from protocol_identifier.verification.data_converter import convert_to_float, extract_resolution, extract_offset
 
 def test_convert_to_float_1024():
     assert convert_to_float("1/1024") == 0.0009765625
@@ -36,4 +36,14 @@ def test_extract_resolution_with_multiplier():
 
 def test_extract_resolution_with_number_in_unit():
     assert extract_resolution("0.0125 mg/m3 per bit") == 0.0125
+
+
+def test_extract_offset_simple_1():
+    assert extract_offset("-1") == -1
+
+def test_extract_offset_with_unit():
+    assert extract_offset("-32127 rpm") == -32127
+
+
+
 
