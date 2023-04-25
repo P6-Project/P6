@@ -53,5 +53,3 @@ def test_convert_data_rpm_data():
 
 def test_convert_data_voltage_current_data():
     assert convert_data('111111001010100', "0.05 A/bit", "-1600 A", "A") == 17
-
-
