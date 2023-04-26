@@ -1,27 +1,30 @@
-from sklearn.ensemble import RandomForestClassifier
+from protocol_identifier.processing import find_j1939_protocol_matches
+
 from argparse import ArgumentParser
 import pandas as pd
-from protocol_identifier.model import predictRF
-from protocol_identifier.verification import find_used_spns, find_usable_spns
+import numpy
 
-def identify(vehicle_path: str, model_path: str, j1939excel_path: str):
-    vh = pd.read_pickle(vehicle_path)
-    protocol = predictRF(vh, model_path)
 
-    if protocol != "J1939":
-        raise Exception("Dataset not J1939")
-    refined_machine_data, used_spns = find_used_spns(j1939excel_path, vh)
-    return find_usable_spns(refined_machine_data, used_spns)
+class Predictor:
+    def predict(self, X) -> numpy.ndarray: # type: ignore
+        pass
 
 if __name__ == "__main__":
-    #parser = ArgumentParser(description="Identify Protocol and usable data points")
-    #parser.add_argument("model_path")
-    #parser.add_argument("vehicle_path")
-    #parser.add_argument("j1939_path")
-    #args = parser.parse_args()
+    parser = ArgumentParser(description="Identify Protocol and usable data points")
+    parser.add_argument("vehicle_path")
+    parser.add_argument("model_path")
+    parser.add_argument("j1939_path")
+    args = parser.parse_args()
 
-    try:
-        #print(identify(args.vehicle_path, args.model_path, args.j1939_path))
-        print(identify("C:\\Users\\magnu\\Downloads\\2015 Kenworth T660_run.pkl.gz","C:\\Users\\magnu\\Downloads\\randomForrest.pkl", "C:\\Users\\magnu\\Desktop\\J1939DA_201802.xls"))
-    except Exception as e:
-        print(e)
+    vh: pd.DataFrame = pd.read_pickle(args.vehicle_path)
+    model: Predictor = pd.read_pickle(args.model_path)
+    
+    protocol: pd.DataFrame = pd.read_pickle(args.j1939_path)
+    
+    prediction = numpy.bincount(model.predict(vh["ID"])).argmax()
+    
+    if prediction in ["J1939"]:
+        matches = find_j1939_protocol_matches(protocol, vh)
+        print(matches)
+    else:
+        print(f"{prediction} is not supported")
