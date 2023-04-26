@@ -1,15 +1,16 @@
-from protocol_identifier.processing import find_j1939_protocol_matches
+from protocol_identifier.protocol import find_j1939_protocol_matches
 
 from argparse import ArgumentParser
 import pandas as pd
-import numpy
-
+import numpy as np
+import time
 
 class Predictor:
-    def predict(self, X) -> numpy.ndarray: # type: ignore
+    def predict(self, X) -> np.ndarray: # type: ignore
         pass
 
 if __name__ == "__main__":
+    start = time.time()
     parser = ArgumentParser(description="Identify Protocol and usable data points")
     parser.add_argument("vehicle_path")
     parser.add_argument("model_path")
@@ -21,10 +22,15 @@ if __name__ == "__main__":
     
     protocol: pd.DataFrame = pd.read_pickle(args.j1939_path)
     
-    prediction = numpy.bincount(model.predict(vh["ID"])).argmax()
+    ids = vh["ID"].apply(lambda x: int(x, 16)).to_frame()
     
+    values, count = np.unique(model.predict(ids), return_counts=True)
+    
+    prediction = values[count.argmax()]
+
     if prediction in ["J1939"]:
         matches = find_j1939_protocol_matches(protocol, vh)
-        print(matches)
+        print(matches.to_dataframe())
     else:
         print(f"{prediction} is not supported")
+    print(time.time() - start)

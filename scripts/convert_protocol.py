@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from protocol_identifier.processing import convert_j1939
+from protocol_identifier.protocol import convert_j1939
 
 import pandas as pd
 
@@ -15,5 +15,5 @@ if __name__ == "__main__":
         ])
     
     cdf = convert_j1939(df)
-    print(cdf[cdf["Units"] == "ASCII"])
+    cdf.to_pickle("./j1939.pkl")
     

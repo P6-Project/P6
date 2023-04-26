@@ -1,16 +1,5 @@
-import pandas as pd
 from typing import Sequence
-import math
 
-def normalize_dfs(dfs: list[pd.DataFrame], sampleSize: int):
-    return [normalize_df(limit(df, sampleSize), sampleSize) for df in dfs]
-
-def normalize_df(df: pd.DataFrame, limit: int):
-    df["Time"] = norm_time(df["Time"], limit)
-    return df
-
-def limit(df: pd.DataFrame, limit: int):
-    return df.head(math.floor(len(df.index) / limit) * limit)
 
 def norm_time(time: Sequence[str], limit: int):
     first = 0

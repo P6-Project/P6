@@ -27,8 +27,9 @@ class SPNCollection:
         return str(self.__collection)
   
 #region PGN SPN Matching  
-def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame) -> dict[int, list[int]]:
+def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame):
     collection = SPNCollection()
+
     for i, row in machine.iterrows():
         pgn = parse_pgn(row["ID"])
         protocol_subset = protocol[protocol["PGN"] == pgn]
@@ -42,6 +43,7 @@ def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame) -
             end: int = start + p_row["SPN Length"]
             min_val: float = p_row["Data Range"][0]
             max_val: float = p_row["Data Range"][1]
+            if end > 64: continue
             
             raw_spn_data = bin_data[start:end]
             spn_data: int = int(raw_spn_data, 2) * p_row["Resolution"] + p_row["Offset"]
@@ -108,7 +110,7 @@ def parse_spn_length(spn_length: str):
     length = float(temp_len[0])
     if "byte" in temp_len[1]:
         length *= 8
-    return length
+    return int(length)
 
 def parse_position(spn_position: str): 
     # this implementation does not support the format of 1,1.1, because there is literally no documentation on what that means   

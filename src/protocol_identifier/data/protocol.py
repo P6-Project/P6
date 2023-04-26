@@ -1,18 +1,5 @@
 import pandas as pd
 
-COLUMNS = [
-    "PGN", 
-    "Parameter Group Label", 
-    "PGN Data Length", 
-    "SPN Position in PGN", 
-    "SPN",
-    "SPN Name", 
-    "SPN Length", 
-    "Resolution", 
-    "Offset", 
-    "Data Range"
-    ]
-
 def can_open_range():
     return pd.Series([
         0,
@@ -31,7 +18,3 @@ def can_open_range():
         *list(range(1537, 1694)),
         *list(range(1793, 1920)),
         ])
-
-def read_j1939_protocol(path: str):
-    return pd.read_excel(path, skiprows=3, sheet_name="SPNs & PGNs",
-    usecols=COLUMNS).dropna(how="all")
