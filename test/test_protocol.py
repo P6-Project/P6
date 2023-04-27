@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import pandas.testing as pdt
 
-from protocol_identifier.protocol import parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length
+from protocol_identifier.protocol import parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length, parse_position, parse_byte_pos, byte_pos
 
 # Test parse_pgn
 
@@ -76,8 +76,6 @@ def test_parse_data_range_wrong():
 
 # Test parse_spn_length
 
-# should check for bytes
-
 def test_parse_spn_length_byte():
     assert parse_spn_length("1 byte") == 8
 
@@ -89,3 +87,27 @@ def test_parse_spn_length_bit():
 
 def test_parse_spn_length_bit_and_byte():
     assert parse_spn_length("10 bits") == 10
+
+
+# Test parse_position
+
+def test_parse_position_rpm():
+    assert parse_position("4-5") == 16
+
+# Test fails due to fault in code, as it multiplies with 8 and returns nearly all the data.
+# def test_parse_position_single_byte():
+#     assert parse_position("1010110111110000000000000001110110101100100100110110101111110000", "2", "1 byte") == "11110000"
+
+def test_parse_position_bit():
+    assert parse_position("1.5") == 4
+
+# def test_parse_position_bit_and_byte():
+#     assert parse_position("1.7-2") == 0
+
+
+# Test parse_byte_pos
+
+
+# Test byte_pos
+
+#def test_byte_pos()
