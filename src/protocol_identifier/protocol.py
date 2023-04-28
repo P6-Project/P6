@@ -33,17 +33,15 @@ def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame):
     for i, row in machine.iterrows():
         pgn = parse_pgn(row["ID"])
         protocol_subset = protocol[protocol["PGN"] == pgn]
-        if protocol_subset.empty:
-            continue
+        if protocol_subset.empty: continue
         
         bin_data = parse_data(row["Data"])
         
         for i, p_row in protocol_subset.iterrows():
             start: int = p_row["SPN Position in PGN"]
-            end: int = start + p_row["SPN Length"]
+            end: int = start + p_row["SPN Length"] - 1
             min_val: float = p_row["Data Range"][0]
             max_val: float = p_row["Data Range"][1]
-            if end > 64: continue
             
             raw_spn_data = bin_data[start:end]
             spn_data: int = int(raw_spn_data, 2) * p_row["Resolution"] + p_row["Offset"]
@@ -122,6 +120,6 @@ def parse_byte_pos(pos: str):
         return byte_pos(int(pos[0]), int(pos[2]))
     return byte_pos(int(pos))
 
-def byte_pos(start_byte: int, pos_in_byte: int=8):
+def byte_pos(start_byte: int, pos_in_byte: int=0):
     return (start_byte * 8) - 8 +  pos_in_byte
 #endregion
