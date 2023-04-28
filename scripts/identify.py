@@ -29,8 +29,9 @@ if __name__ == "__main__":
     prediction = values[count.argmax()]
 
     if prediction in ["J1939"]:
+        print(prediction)
         matches = find_j1939_protocol_matches(protocol, vh)
-        print(matches.to_dataframe())
+        print(matches.to_dataframe().to_csv())
     else:
         print(f"{prediction} is not supported")
     print(time.time() - start)

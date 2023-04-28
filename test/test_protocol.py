@@ -12,15 +12,11 @@ def test_parse_pgn_dec():
 def test_parse_pgn_with_hex_sign():
     assert parse_pgn("0x0CF004FE") == 61444
 
-###### Fails but is possible (part of J1939) 
+def test_parse_pgn_zero(): 
+    assert parse_pgn("180000FE") == 0
 
-# def test_parse_pgn_zero(): 
-#     assert parse_pgn("0") == 0
-
-# def test_parse_pgn_low_number(): # Slicing a part of the string not existing.
-#     assert parse_pgn("400") == 1024
-
-##################
+def test_parse_pgn_low_number(): # Slicing a part of the string not existing.
+    assert parse_pgn("180400FE") == 1024
 
 
 # Test parse_data
@@ -42,6 +38,9 @@ def test_parse_offset_with_unit():
 
 def test_parse_resolution_simple_slash():
     assert parse_resolution("0.001/bit") == 0.001
+
+def test_parse_resolution_kpa():
+    assert parse_resolution("16 kPa/bit") == 16
 
 def test_parse_resolution_simple_per():
     assert parse_resolution("0.5 rpm per bit") == 0.5
@@ -91,23 +90,45 @@ def test_parse_spn_length_bit_and_byte():
 
 # Test parse_position
 
-def test_parse_position_rpm():
-    assert parse_position("4-5") == 16
+def test_parse_position_rpm_range():
+    assert parse_position("4-5") == 24
 
-# Test fails due to fault in code, as it multiplies with 8 and returns nearly all the data.
-# def test_parse_position_single_byte():
-#     assert parse_position("1010110111110000000000000001110110101100100100110110101111110000", "2", "1 byte") == "11110000"
+def test_parse_position_single_byte():
+    assert parse_position("2") == 8
 
 def test_parse_position_bit():
     assert parse_position("1.5") == 4
 
-# def test_parse_position_bit_and_byte():
-#     assert parse_position("1.7-2") == 0
+def test_parse_position_bit_and_byte():
+    assert parse_position("1.7-2") == 6
 
 
 # Test parse_byte_pos
 
+def test_parse_byte_pos():
+    assert parse_byte_pos("4") == 24
+
+def test_parse_byte_pos_single_byte():
+    assert parse_byte_pos("2") == 8
+
+def test_parse_byte_pos_bit():
+    assert parse_byte_pos("1.5") == 4
+
+def test_parse_byte_pos_bit_and_byte():
+    assert parse_byte_pos("1.7") == 6
 
 # Test byte_pos
 
-#def test_byte_pos()
+def test_byte_pos():
+    assert byte_pos(4) == 24
+
+def test_byte_pos_single_byte():
+    assert byte_pos(2) == 8
+
+def test_byte_pos_bit():
+    assert byte_pos(1, 4) == 4
+
+def test_byte_pos_bit_and_byte():
+    assert byte_pos(1, 6) == 6
+
+
