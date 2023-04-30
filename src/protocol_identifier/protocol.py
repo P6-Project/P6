@@ -29,7 +29,6 @@ class SPNCollection:
 #region PGN SPN Matching  
 def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame):
     collection = SPNCollection()
-
     for i, row in machine.iterrows():
         pgn = parse_pgn(row["ID"])
         protocol_subset = protocol[protocol["PGN"] == pgn]
@@ -39,14 +38,17 @@ def find_j1939_protocol_matches(protocol: pd.DataFrame, machine: pd.DataFrame):
         
         for i, p_row in protocol_subset.iterrows():
             start: int = p_row["SPN Position in PGN"]
-            end: int = start + p_row["SPN Length"] - 1
+            end: int = start + p_row["SPN Length"]
             min_val: float = p_row["Data Range"][0]
             max_val: float = p_row["Data Range"][1]
             
-            raw_spn_data = bin_data[start:end]
-            spn_data: int = int(raw_spn_data, 2) * p_row["Resolution"] + p_row["Offset"]
+            bin_spn_data = bin_data[start:end]
+            spn_data: int = int(bin_spn_data, 2) * p_row["Resolution"] + p_row["Offset"]
+
             if min_val <= spn_data <= max_val:
                 collection.add(pgn, p_row["SPN"])
+
+
     return collection
         
 def parse_pgn(id: str) -> int:
@@ -111,8 +113,6 @@ def parse_spn_length(spn_length: str):
     return int(length)
 
 def parse_position(spn_position: str): 
-    # this implementation does not support the format of 1,1.1, because there is literally no documentation on what that means   
-    # why give a range and not just the start when the SPN length is given? this is a question only god can answer.
     return parse_byte_pos(spn_position.split("-")[0])
     
 def parse_byte_pos(pos: str):

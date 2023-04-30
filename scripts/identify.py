@@ -31,7 +31,7 @@ if __name__ == "__main__":
     if prediction in ["J1939"]:
         print(prediction)
         matches = find_j1939_protocol_matches(protocol, vh)
-        print(matches.to_dataframe().to_csv())
+        print(matches.to_dataframe())
     else:
         print(f"{prediction} is not supported")
     print(time.time() - start)
