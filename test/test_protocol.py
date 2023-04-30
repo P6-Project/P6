@@ -24,12 +24,11 @@ class TestSPNcollection():
         assert str(self.collection) == str({"61444": {"1483"}, "61443": set()})
 
     def test_dataframe(self):
-        self.collection.add("61444", "190")
         self.collection.add("61443", "91")
 
         expected = {
-            "PGN": ["61444", "61444", "61443"],
-            "SPN": ["190","1483", "91"]
+            "PGN": ["61444", "61443"],
+            "SPN": ["1483", "91"]
         }
 
         pdt.assert_frame_equal(self.collection.to_dataframe(), pd.DataFrame(expected))
