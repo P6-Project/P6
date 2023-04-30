@@ -2,7 +2,38 @@ import pytest
 import pandas as pd
 import pandas.testing as pdt
 
-from protocol_identifier.protocol import parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length, parse_position, parse_byte_pos, byte_pos
+from protocol_identifier.protocol import SPNCollection, parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length, parse_position, parse_byte_pos, byte_pos
+
+# test SPNCollenction class
+
+class TestSPNcollection():
+    collection = SPNCollection() 
+
+    def test_add(self):
+        self.collection.add("61444", "190")
+        assert str(self.collection) == str({"61444": {"190"}})
+        self.collection.add("61443", "91")
+        assert str(self.collection) == str({"61444": {"190"}, "61443": {"91"}})
+        self.collection.add("61444", "1483")
+        assert str(self.collection) == str({"61444": {"190", "1483"}, "61443": {"91"}})
+
+    def test_remove(self):
+        self.collection.remove("61444", "190")
+        assert str(self.collection) == str({"61444": {"1483"}, "61443": {"91"}})
+        self.collection.remove("61443", "91")
+        assert str(self.collection) == str({"61444": {"1483"}, "61443": set()})
+
+    def test_dataframe(self):
+        self.collection.add("61444", "190")
+        self.collection.add("61443", "91")
+
+        expected = {
+            "PGN": ["61444", "61444", "61443"],
+            "SPN": ["1483", "190", "91"]
+        }
+
+        pdt.assert_frame_equal(self.collection.to_dataframe(), pd.DataFrame(expected))
+
 
 # Test parse_pgn
 
@@ -24,6 +55,9 @@ def test_parse_pgn_low_number(): # Slicing a part of the string not existing.
 def test_parse_data():
     assert parse_data("f06b93ac1d00f0ad") == "1010110111110000000000000001110110101100100100110110101111110000"
 
+# IS a valid case we should consider.
+# def test_parse_data_yes():
+#     assert parse_data("e9fe00") == "111010011111111000000000"
 
 # Test parse_offset
 
@@ -130,5 +164,3 @@ def test_byte_pos_bit():
 
 def test_byte_pos_bit_and_byte():
     assert byte_pos(1, 6) == 6
-
-
