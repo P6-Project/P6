@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import pandas.testing as pdt
 
-from protocol_identifier.protocol import SPNCollection, parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length, parse_position, parse_byte_pos, byte_pos
+from protocol_identifier.protocol import SPNCollection, parse_pgn, parse_data, parse_offset, parse_resolution, parse_data_range, parse_spn_length, parse_position, parse_byte_pos, byte_pos, convert_j1939
 
 # test SPNCollenction class
 
@@ -98,10 +98,10 @@ def test_parse_resolution_with_number_in_unit():
 # Test parse_data_range
 
 def test_parse_data_range_rpm_pgn_61444():
-    assert parse_data_range("0 to 8,031.875 rpm") == (0, 8031.875)
+    assert parse_data_range("0 to 8,031.875 rpm") == (0.0, 8031.875)
 
 def test_parse_data_range_negative_number():
-    assert parse_data_range("-125 to 125 %") == (-125.0, 125)
+    assert parse_data_range("-125 to 125 %") == (-125.0, 125.0)
 
 def test_parse_data_range_wrong():
     assert parse_data_range(" ") == (0.0, 0.0)
@@ -164,3 +164,32 @@ def test_byte_pos_bit():
 
 def test_byte_pos_bit_and_byte():
     assert byte_pos(1, 6) == 6
+
+
+# Test cpnvert_j1939
+
+def test_convert_1939():
+    input = {
+        "PGN Data Length": [8, 8, 8, 8],
+        "PGN": ["61444", "61444", "64444", "65555"],
+        "Resolution": ["16 kPa/bit", "0.05 kg/h per bit", "128 deg/7 bit", "0.0125 mg/m3 per bit"],
+        "Offset": ["0", "-1", "-32127 rpm", "10"],
+        "Data Range": ["0 to 8,031.875 rpm", "-125 to 125 %", " ", "-1 to 1 "],
+        "SPN Length": ["1 byte", "2 bytes", "4 bits", "10 bits"],
+        "SPN Position in PGN": ["4-5", "2", "1.5", "1.7-2"]
+    }
+
+    expected = {
+        "PGN Data Length": [8, 8, 8, 8],
+        "PGN": ["61444", "61444", "64444", "65555"],
+        "Resolution": [16, 0.05, 18.285714285714286, 0.0125],
+        "Offset": [0.0, -1.0, -32127.0, 10.0],
+        "Data Range": [(0.0, 8031.875), (-125.0, 125.0), (0.0, 0.0), (-1.0, 1.0)],
+        "SPN Length": [8, 16, 4, 10],
+        "SPN Position in PGN": [24, 8, 4, 6]
+    }
+
+    converted_data = convert_j1939(pd.DataFrame(input))
+
+    pdt.assert_frame_equal(converted_data, pd.DataFrame(expected))
+
