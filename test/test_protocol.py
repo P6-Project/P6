@@ -29,7 +29,7 @@ class TestSPNcollection():
 
         expected = {
             "PGN": ["61444", "61444", "61443"],
-            "SPN": ["1483", "190", "91"]
+            "SPN": ["190","1483", "91"]
         }
 
         pdt.assert_frame_equal(self.collection.to_dataframe(), pd.DataFrame(expected))
