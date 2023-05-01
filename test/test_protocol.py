@@ -45,7 +45,7 @@ def test_parse_pgn_with_hex_sign():
 def test_parse_pgn_zero(): 
     assert parse_pgn("180000FE") == 0
 
-def test_parse_pgn_low_number(): # Slicing a part of the string not existing.
+def test_parse_pgn_low_number(): 
     assert parse_pgn("180400FE") == 1024
 
 
@@ -54,9 +54,6 @@ def test_parse_pgn_low_number(): # Slicing a part of the string not existing.
 def test_parse_data():
     assert parse_data("f06b93ac1d00f0ad") == "1010110111110000000000000001110110101100100100110110101111110000"
 
-# IS a valid case we should consider.
-# def test_parse_data_yes():
-#     assert parse_data("e9fe00") == "111010011111111000000000"
 
 # Test parse_offset
 
@@ -165,7 +162,7 @@ def test_byte_pos_bit_and_byte():
     assert byte_pos(1, 6) == 6
 
 
-# Test cpnvert_j1939
+# Test convert_j1939
 
 def test_convert_1939():
     input = {
@@ -191,4 +188,3 @@ def test_convert_1939():
     converted_data = convert_j1939(pd.DataFrame(input))
 
     pdt.assert_frame_equal(converted_data, pd.DataFrame(expected))
-
