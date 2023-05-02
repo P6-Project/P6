@@ -10,7 +10,6 @@ def linear_regression_model_creator(data: pd.DataFrame, target: str = "Label", t
     X = data["ID"].to_frame()
     print(X.head(5000))
     le = preprocessing.LabelEncoder()
-    # X.loc["ID"].apply(lambda x: int(x, 16)).to_frame()
     y = data[target]
     y_encoded = le.fit_transform(y)
     X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y_encoded, test_size=test_size, random_state=random_state)
