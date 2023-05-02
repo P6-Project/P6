@@ -1,4 +1,5 @@
 import array
+from ast import literal_eval
 import binascii
 import random
 import secrets
@@ -81,57 +82,74 @@ def alter_short_proto(data : pd.DataFrame, padding_range = [0x10000, 0x1FFFF], p
     #generate 10 random numbers from range
     id_padding_map = {}
     padded_str = ""
-    padding_list = [str(hex(random.randint(padding_range[0], padding_range[1])) for _ in range(10))]
+    padding_list = [str(hex(random.randint(padding_range[0], padding_range[1]))) for _ in range(10)]
     if(padding_side is Padding_side.right):
         padding_list = bin_string_to_bigEndianHex(padding_list)
     #randomly apply padding to ID's, but same padding to same ID's
     for id in data["ID"].unique():
         if id is not type(str):
-            data["ID"].apply(lambda x: str(hex(x)))
+            data["ID"].apply(lambda x: str(hex(int(x, 16))))
         padding = random.choice(padding_list)
         if padding_side is Padding_side.right:
             padded_str = id + padding
         elif padding_side is Padding_side.left:
             padded_str = padding + id
         id_padding_map[id] = padded_str
-            
+    data["ID"] = data["ID"].apply(lambda x: id_padding_map[x])
+    return data
+
+def format_hex_data(hex_data_str):
+    hex_data_list = eval(hex_data_str)  # Convert string to list
+    return ''.join(hex_data_list) 
+
+
+def un_fuck_normalRun_data(data : pd.DataFrame):
+    data["Data"] = data["Data"].apply(format_hex_data)
+    return data
 
 def main():
     warnings.filterwarnings("ignore")
     # Load data
     should_run = True
-    # for files in os.listdir("./data/dfs"):
-    #     if files.find("vehicle_data_ID_100") != -1:
-    #         knn_train(pd.read_pickle("./data/dfs/" + files))
-    #         should_run = False
     data = pd.DataFrame()
     for files in os.listdir("./data/dfs"):
-        if files.find("timeNormalized") != -1 or files.find("rand_data_data") != -1 and should_run == True and files.find("normal_run") == -1:
+        if files.find("timeNormalized") != -1  and should_run == True:
             print(files)
-            
+            long = 0
+            short = 0
             #construct vector for vehicle with most common ID's
             vehicle_df = pd.DataFrame()
-            vehicle = pd.read_pickle("./data/dfs/" + files)
-            if(vehicle["ID"].dtypes == "str"):
-                vehicle["ID"] = vehicle["ID"].apply(lambda x: int(x, 16))
+            vehicle : pd.DataFrame = pd.read_pickle("./data/dfs/" + files)
+            # if(vehicle["ID"].dtypes != "str"):
+            #     vehicle["ID"] = vehicle["ID"].apply(lambda x: str(hex(int(x, 16))))
+            for id in vehicle["ID"]:
+                if len(id) < 6:
+                    short += 1
+                elif len(id) > 6:
+                    long += 1    
+            if long == 0:
+                print(files, " is here")            
+                alter_short_proto(vehicle)
+            vehicle["ID"] = vehicle["ID"].apply(lambda x: hex(int(x, 16)))
+            if files.find("normal_run_data.txt") != -1:
+                vehicle = un_fuck_normalRun_data(vehicle)
             if(vehicle["Data"].dtypes == "str"):
                 vehicle['Data'] = vehicle['Data'].apply(lambda x: int(x, 16))
             if files.find("Kenworth") != -1:
-                print(vehicle["Label"].unique())
+                continue
             ID_dict = {}
             for id in vehicle["ID"]:
                 ID_dict[id] = ID_dict.get(id, 0) + 1
             #if a value in the dictionary is greater than 100, add it to the dataframe
             for key, value in ID_dict.items():
                 if value > vehicle["ID"].count() / 500:
-                    if files.find("rand_data_data") != -1:
-                        print(key, value)
                     vehicle_df = vehicle_df.append(vehicle.loc[vehicle["ID"] == key], ignore_index=True)
             #append the dataframe to the data
             data = data.append(vehicle_df, ignore_index=True)
-    print(data.head(5000))
+    if any("Case stor" in machine for machine in data["Machine"].unique()):
+        print(data.head(5000))
     #save the data
-    data.to_pickle("./data/dfs/vehicle_data_ID_100.pkl")
+    data.to_pickle("./data/dfs/vehicle_data_ID_Ext.pkl")
     #knn_train(data)   
     
     
@@ -139,7 +157,15 @@ def main():
 #range of ID padding: 10000 -> 1FFFF   
 
 if __name__ == "__main__":
-    bin_string_to_bigEndianHex(["0x1FFFFF", "0x100000"])    
+    #main()
+    for files in os.listdir("./data/dfs/"):
+        if files.find("vehicle_data_ID_Ext") != -1:
+            df : pd.DataFrame = pd.read_pickle("./data/dfs/" + files)
+            if any("Case stor" in machine for machine in df["Machine"].unique()):
+                print(df[df["Machine"] == "Case stor"].head(5000))
+            df["ID"] = df["ID"].apply(lambda x: int(x, 16))
+            df["Data"] = df["Data"].apply(lambda x: int(x, 16))
+            knn_train(df)
     
                 
             
